@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Refined Nations
 // @namespace    http://tampermonkey.net/
-// @version      2.0
+// @version      2.1
 // @description  UI tweaks for MaBi Web Nations
 // @author       Mark Woon
 // @match        http://www.mabiweb.com/modules.php?name=GM_Nations*
@@ -76,7 +76,7 @@ if (header.innerHTML.match('Game finished')) {
 
 const logoutLink = document.querySelector('a[href="modules.php?name=Your_Account&op=logout"]');
 // get username
-let username;
+let username = '';
 console.log(logoutLink);
 if (logoutLink) {
     const welcomeText = logoutLink.parentNode.innerHTML;
@@ -85,8 +85,6 @@ if (logoutLink) {
         username = match[1];
     }
     console.log('Username:', username);
-} else {
-    return;
 }
 
 // get game ID and URL
@@ -171,7 +169,22 @@ if (tracks) {
     tracks.removeAttribute('style');
 }
 
+
 // re-configure tracks div
+const newTracksTable = [];
+
+function addTrackSpacer() {
+    const td = document.createElement('td');
+    td.innerHTML = '&nbsp;&nbsp;';
+    newTracksTable.push(td);
+}
+
+function addTrackCell(...content) {
+    const td = document.createElement('td');
+    content.forEach((n) => td.appendChild(n));
+    newTracksTable.push(td);
+}
+
 const tracksTable = document.querySelector('#nations-tracks table tbody tr');
 if (tracksTable) {
     const justice = tracksTable.children[0].children[0];
@@ -182,21 +195,7 @@ if (tracksTable) {
         passTurn = tracksTable.children[5].children[0];
     }
 
-    // build new tracks
-    const newTracksTable = [];
-
-    function addTrackSpacer() {
-        const td = document.createElement('td');
-        td.innerHTML = '&nbsp;&nbsp;';
-        newTracksTable.push(td);
-    }
-
-    function addTrackCell(...content) {
-        const td = document.createElement('td');
-        content.forEach((n) => td.appendChild(n));
-        newTracksTable.push(td);
-    }
-
+    // build status cell
     const statusTd = document.createElement('td');
     statusTd.style['text-align'] = 'center';
     statusTd.innerHTML = `<div style="margin: 0 8px 8px 4px;">${round}</div>`;
@@ -208,6 +207,7 @@ if (tracksTable) {
         statusTd.appendChild(spacer);
     }
 
+    // add reload page button
     const button = document.createElement('button');
     button.innerHTML = 'Reload Page';
     button.onclick = () => {
@@ -216,6 +216,7 @@ if (tracksTable) {
     };
     statusTd.appendChild(button);
 
+    // build new tracks table
     newTracksTable.push(statusTd);
 
     const actions = document.getElementById('nations-actions');
@@ -231,9 +232,11 @@ if (tracksTable) {
         addTrackCell(science);
     }
 
+    // remove existing elements from track table
     while (tracksTable.firstChild) {
         tracksTable.removeChild(tracksTable.lastChild);
     }
+    // and replace with new tracks
     newTracksTable.forEach((n) => tracksTable.appendChild(n));
 
     if (playerActions) {
