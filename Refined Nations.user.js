@@ -8,6 +8,7 @@
 // @grant        GM_addStyle
 // @noframes
 // ==/UserScript==
+/* jshint esversion: 6 */
 let players = [];
 
 // ---- START CUSTOMIZATIONS ----//
@@ -361,4 +362,3 @@ function addProductionTable(playerId, playerNode) {
         }
     }
 }
-
