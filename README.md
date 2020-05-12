@@ -1,6 +1,8 @@
 # RefinedNations
 
-This is a userscript for Nations on MaBi Web.
+[![GreasyFork]https://img.shields.io/badge/GreasyFork-2.1-green]](https://greasyfork.org/en/scripts/403128-refined-nations)
+
+This is a userscript for Nations on MaBi Web.  It's available 
 
 Its goal is to maximize the amount of information displayed at once.  It will:
 
@@ -13,3 +15,5 @@ Its goal is to maximize the amount of information displayed at once.  It will:
 <img src="nations.png" width="600" />
 
 This has only been tested in Chrome and Tampermonkey.
+
+Suggestions/contributions welcome.
