@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Refined Nations
 // @namespace    http://tampermonkey.net/
-// @version      2.1
+// @version      2.2
 // @description  UI tweaks for MaBi Web Nations
 // @author       Mark Woon
 // @match        http://www.mabiweb.com/modules.php?name=GM_Nations*
@@ -12,9 +12,15 @@
 let players = [];
 
 // ---- START CUSTOMIZATIONS ----//
+// show all player boards?
 const showAllBoards = true;
+// if showing all player boards, should signed in user's board be shown in turn order, or first?
+const showBoardsInPlayerOrder = false;
+// show Nations header containing game and player information?
 const showHeader = false;
+// hide all extraneous UI?
 const hideChrome = true;
+// move personal notes out of tab and place it beside player board?
 const movePersonalNotes = true;
 
 // customize player order here, or boards will be shown in turn order
@@ -98,7 +104,7 @@ console.log('Game ID:', urlMatch[1]);
 const gameUrl = `http://www.mabiweb.com/modules.php?name=GM_Nations&g_id=${urlMatch[1]}&op=view_game_reset`;
 console.log('URL:', gameUrl);
 
-// get players, player levels, current player and round #
+// get round #
 const match = header.innerHTML.match(/round\:\s*(<b>.*?<\/b>)\s*<br>(.*?)<br>/m);
 if (!match) {
     console.error('CANNOT DETERMINE PLAYERS!');
@@ -106,20 +112,30 @@ if (!match) {
 }
 const round = match[1];
 const playerString = match[2];
+
+// get current player
 let currentPlayer = playerString.match(/<b>(.+?)<\/b>/m)[1];
 console.log('Current player is', currentPlayer);
-const regex = />(\w+)(?:<\/b>)?( \(lv\. [1-4]\))?&nbsp;/gm
+
+// get players and player levels
+// player level will be empty in games where difficulty is set for everyone
+const playerInfoRegex = />(\w+)(?:<\/b>)?( \(lv\. [1-4]\))?&nbsp;/gm
 let rez;
 const playerOrder = [];
 const playerLevels = {};
-while (rez = regex.exec(playerString)) {
-    playerLevels[rez[1]] = rez[2];
+while (rez = playerInfoRegex.exec(playerString)) {
     playerOrder.push(rez[1]);
+    playerLevels[rez[1]] = rez[2];
 }
+console.log('player order:', playerOrder);
+console.log(playerLevels);
 
-if (playerLevels[username]) {
-    // playing current game
-    players[0] = username;
+if (playerLevels.hasOwnProperty(username)) {
+    console.log('Player is in this game!');
+    if (!showBoardsInPlayerOrder) {
+        console.log('Making player\'s board first');
+        players[0] = username;
+    }
 }
 // remove players not in current game
 for (let x = 0; x < players.length; x++) {
@@ -134,9 +150,7 @@ for (let x = 0; x < players.length; x++) {
 }
 // remove empty player entries
 players = players.filter((v) => v).concat(playerOrder.filter((v) => v));
-
-console.log(playerLevels);
-console.log(players);
+console.log('board order:', players);
 
 
 // player actions only available when it's the player's turn
@@ -200,7 +214,6 @@ if (tracksTable) {
     statusTd.style['text-align'] = 'center';
     statusTd.innerHTML = `<div style="margin: 0 8px 8px 4px;">${round}</div>`;
     if (passTurn) {
-        console.log(passTurn.getAttribute('href'));
         statusTd.appendChild(passTurn);
         const spacer = document.createElement('span');
         spacer.innerHTML = '&nbsp;&nbsp;&nbsp;&nbsp;';
@@ -211,7 +224,6 @@ if (tracksTable) {
     const button = document.createElement('button');
     button.innerHTML = 'Reload Page';
     button.onclick = () => {
-        console.log('clicked');
         window.location.href = gameUrl;
     };
     statusTd.appendChild(button);
@@ -248,10 +260,11 @@ if (tracksTable) {
 const tabList = document.querySelector('#placeholder ul');
 if (tabList) {
     const size = tabList.children.length;
+    console.log('Adding levels and current player info to tabs');
     for (let x = 0; x < size; x++) {
         const tab = tabList.children[x];
         const name = tab.children[0].innerHTML;
-        if (playerLevels[name]) {
+        if (players.indexOf(name) !== -1) {
             const link = tab.children[0];
             tab.removeChild(link);
 
@@ -264,7 +277,9 @@ if (tabList) {
             link.style.border = 'none';
             link.style.padding = '0';
             div.appendChild(link);
-            div.appendChild(document.createTextNode(' ' + playerLevels[name]));
+            if (playerLevels[name]) {
+                div.appendChild(document.createTextNode(' ' + playerLevels[name]));
+            }
             tab.appendChild(div);
         }
     }
@@ -286,27 +301,6 @@ if (p1) {
     console.log('Got P1');
     p1.style.display = 'block';
     addProductionTable(players[0], p1);
-    if (movePersonalNotes) {
-        const notesForm = document.querySelector('#personal_notes form');
-        if (notesForm) {
-            const textarea = document.querySelector('#personal_notes textarea');
-            textarea.style.width = '300px';
-            textarea.style.height = '300px';
-
-            const div = document.createElement('div');
-            div.appendChild(notesForm);
-            div.style.position = 'absolute';
-            div.style.left = '1070px';
-            div.style.top = '130px';
-            p1.appendChild(div);
-
-            const tab = document.querySelector('#placeholder ul.tab li:last-child');
-            if (tab) {
-                console.log('removing personal notes tab');
-                tab.parentNode.removeChild(tab);
-            }
-        }
-    }
 
     if (showAllBoards) {
         for (let x = 5; x > 0; x--) {
@@ -337,7 +331,7 @@ function showBoard(p1, playerName) {
 
 
 function addProductionTable(playerId, playerNode) {
-    console.log('attempting to add production table for ', playerId);
+    console.log('Attempting to add production table for ', playerId);
     let resources = document.querySelector('#' + playerId + ' img:last-of-type');
     if (!resources.onmouseover) {
         resources = playerNode.children[playerNode.children.length - 1];
@@ -362,6 +356,34 @@ function addProductionTable(playerId, playerNode) {
 
             playerNode.appendChild(div);
             console.log('...added');
+        }
+    }
+    if (playerId === username) {
+        handlePersonalNotes(playerNode);
+    }
+}
+
+
+function handlePersonalNotes(playerNode) {
+    if (movePersonalNotes) {
+        const notesForm = document.querySelector('#personal_notes form');
+        if (notesForm) {
+            const textarea = document.querySelector('#personal_notes textarea');
+            textarea.style.width = '300px';
+            textarea.style.height = '300px';
+
+            const div = document.createElement('div');
+            div.appendChild(notesForm);
+            div.style.position = 'absolute';
+            div.style.left = '1070px';
+            div.style.top = '130px';
+            playerNode.appendChild(div);
+
+            const tab = document.querySelector('#placeholder ul.tab li:last-child');
+            if (tab) {
+                console.log('removing personal notes tab');
+                tab.parentNode.removeChild(tab);
+            }
         }
     }
 }
