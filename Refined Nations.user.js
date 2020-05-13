@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Refined Nations
 // @namespace    http://tampermonkey.net/
-// @version      2.3.1
+// @version      2.3.2
 // @description  UI tweaks for MaBi Web Nations
 // @author       Mark Woon
 // @match        http://www.mabiweb.com/modules.php?name=GM_Nations*
@@ -71,6 +71,13 @@ body > table:nth-of-type(4) > tbody> tr:first-of-type > td:nth-of-type(5) {
 }
 `);
 }
+
+const header = document.getElementById('nations-gameheader');
+if (header.innerHTML.match('Game finished')) {
+  console.log('Game over...');
+  return;
+}
+
 if (!showHeader) {
   console.log('hiding header');
   GM_addStyle(`
@@ -78,13 +85,6 @@ if (!showHeader) {
   display: none;
 }
 `);
-}
-
-
-const header = document.getElementById('nations-gameheader');
-if (header.innerHTML.match('Game finished')) {
-  console.log('Game over...');
-  return;
 }
 
 const logoutLink = document.querySelector('a[href="modules.php?name=Your_Account&op=logout"]');
@@ -137,7 +137,8 @@ while (rez = playerInfoRegex.exec(playerString)) {
 console.log('player order:', playerOrder);
 console.log(playerLevels);
 
-if (playerLevels.hasOwnProperty(username)) {
+const userIsPlaying = playerLevels.hasOwnProperty(username);
+if (userIsPlaying) {
   console.log('Player is in this game!');
   if (!showBoardsInPlayerOrder) {
     console.log('Making player\'s board first');
@@ -240,7 +241,7 @@ if (tracksTable) {
   };
   buttonDiv.appendChild(reloadButton);
 
-  if (autoReload) {
+  if (autoReload && userIsPlaying) {
     // add auto-reload indicator
     const reloadMsg = document.createElement('div');
     reloadMsg.style.fontSize = '8pt';
@@ -316,7 +317,11 @@ if (nationsBoardImg) {
   console.log('Moving recent actions');
   reorder(nationsBoardImg, recentActions);
   recentActions.style.top = '0';
-  recentActions.style.left = '1112px';
+  if (players.length === 6) {
+    recentActions.style.left = '1220px';
+  } else {
+    recentActions.style.left = '1112px';
+  }
 }
 
 // re-configure player boards
@@ -337,7 +342,7 @@ if (p1) {
 }
 
 
-if (autoReload) {
+if (autoReload && userIsPlaying) {
   console.log('Auto-reload enabled');
   if (currentPlayer === username) {
     console.log('...but it\'s your turn');
