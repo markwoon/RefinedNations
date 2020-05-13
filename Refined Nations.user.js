@@ -283,6 +283,7 @@ if (tracksTable) {
 
 // add level and current player info to tabs
 const tabList = document.querySelector('#placeholder ul');
+const playerColors = {};
 if (tabList) {
   const size = tabList.children.length;
   console.log('Adding levels and current player info to tabs');
@@ -291,6 +292,7 @@ if (tabList) {
     const name = tab.children[0].innerHTML;
     if (players.indexOf(name) !== -1) {
       const link = tab.children[0];
+      playerColors[name] = link.style.color;
       tab.removeChild(link);
 
       const div = document.createElement('div');
@@ -387,6 +389,15 @@ function showBoard(p1, playerName) {
  * Makes a player's production results visible.
  */
 function addProductionTable(playerId, playerNode) {
+  const nametag = document.createElement('div');
+  nametag.style.position = 'absolute';
+  nametag.style.left = '1070px';
+  if (playerColors[playerId]) {
+    nametag.style.color = playerColors[playerId];
+  }
+  nametag.innerHTML = `<b>${playerId}</b>`;
+  playerNode.appendChild(nametag);
+
   console.log('Adding production results for ', playerId);
   let resources = document.querySelector('#' + playerId + ' img:last-of-type');
   if (!resources.onmouseover) {
@@ -404,6 +415,7 @@ function addProductionTable(playerId, playerNode) {
       const div = document.createElement('div');
       div.innerHTML = productionTable;
       div.style.position = 'absolute';
+      div.style.top = '3em';
       div.style.left = '1070px';
       div.style.background = '#fff';
 
@@ -434,7 +446,7 @@ function movePersonalNotes(playerNode) {
       div.appendChild(notesForm);
       div.style.position = 'absolute';
       div.style.left = '1070px';
-      div.style.top = '130px';
+      div.style.top = '13em';
       playerNode.appendChild(div);
 
       const tab = document.querySelector('#placeholder ul.tab li:last-child');
