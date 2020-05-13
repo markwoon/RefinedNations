@@ -25,7 +25,7 @@ const hideChrome = true;
 // show signed-in user's personal notes beside player board?
 const showPersonalNotes = true;
 // enable reload?
-const autoReload = true;
+const autoReload = false;
 // if autoReload is enabled, how often page will be reloaded (in minutes)?
 const reloadInterval = 5;
 

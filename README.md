@@ -11,7 +11,7 @@ Its goal is to maximize the amount of information displayed at once.  It will:
 * Always display resource production/total vp information (normally only displayed when hovering over resources)
 * Integrate personal notes into player board
 * Adds a "Reload Page" button so you don't have to go back to the Game Manager when you finish your turn
-* Ability to auto-reload to get notifications when it's your turn
+* Ability to auto-reload to get notifications when it's your turn (disabled by default)
 
 <img src="nations.png" width="600" />
 
