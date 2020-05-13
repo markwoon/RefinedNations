@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Refined Nations
 // @namespace    http://tampermonkey.net/
-// @version      2.3.2
+// @version      2.3.3
 // @description  UI tweaks for MaBi Web Nations
 // @author       Mark Woon
 // @match        http://www.mabiweb.com/modules.php?name=GM_Nations*
@@ -401,7 +401,7 @@ function addProductionTable(playerId, playerNode) {
   console.log('Adding production results for ', playerId);
   let resources = document.querySelector('#' + playerId + ' img:last-of-type');
   if (!resources.onmouseover) {
-    resources = playerNode.children[playerNode.children.length - 1];
+    resources = playerNode.children[playerNode.children.length - 2];
   }
   if (resources.onmouseover) {
     const mouseOver = resources.getAttribute('onmouseover');
