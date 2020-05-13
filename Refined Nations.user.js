@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Refined Nations
 // @namespace    http://tampermonkey.net/
-// @version      2.3
+// @version      2.3.1
 // @description  UI tweaks for MaBi Web Nations
 // @author       Mark Woon
 // @match        http://www.mabiweb.com/modules.php?name=GM_Nations*
@@ -220,20 +220,37 @@ if (tracksTable) {
   const statusTd = document.createElement('td');
   statusTd.style['text-align'] = 'center';
   statusTd.innerHTML = `<div style="margin: 0 8px 8px 4px;">${round}</div>`;
+
   if (passTurn) {
+    // add pass turn link
+    passTurn.style.display = 'inline-block';
+    passTurn.style.verticalAlign = 'top';
+    passTurn.style.marginTop = '4px';
+    passTurn.style.marginRight = '2em';
     statusTd.appendChild(passTurn);
-    const spacer = document.createElement('span');
-    spacer.innerHTML = '&nbsp;&nbsp;&nbsp;&nbsp;';
-    statusTd.appendChild(spacer);
   }
 
   // add reload page button
-  const button = document.createElement('button');
-  button.innerHTML = 'Reload Page';
-  button.onclick = () => {
+  const buttonDiv = document.createElement('div');
+  buttonDiv.style.display = 'inline-block';
+  const reloadButton = document.createElement('button');
+  reloadButton.innerHTML = 'Reload Page';
+  reloadButton.onclick = () => {
     window.location.href = gameUrl;
   };
-  statusTd.appendChild(button);
+  buttonDiv.appendChild(reloadButton);
+
+  if (autoReload) {
+    // add auto-reload indicator
+    const reloadMsg = document.createElement('div');
+    reloadMsg.style.fontSize = '8pt';
+    reloadMsg.style.color = '#999999';
+    reloadMsg.innerHTML = 'auto-reload enabled';
+    buttonDiv.appendChild(reloadMsg);
+  }
+
+  statusTd.appendChild(buttonDiv);
+
 
   // build new tracks table
   newTracksTable.push(statusTd);
