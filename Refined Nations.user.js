@@ -1,45 +1,157 @@
 // ==UserScript==
 // @name         Refined Nations
-// @namespace    http://tampermonkey.net/
-// @version      2.3.3
+// @version      3.0.0
 // @description  UI tweaks for MaBi Web Nations
-// @author       Mark Woon
 // @match        http://www.mabiweb.com/modules.php?name=GM_Nations*
+// @author       Mark Woon
+// @namespace    https://github.com/markwoon/
+// @supportURL   https://github.com/markwoon/RefinedNations
+// @require      https://openuserjs.org/src/libs/sizzle/GM_config.js
 // @grant        GM_addStyle
 // @grant        GM_notification
+// @grant        GM_registerMenuCommand
 // @noframes
 // ==/UserScript==
 /* jshint esversion: 6 */
+/* global GM_addStyle, GM_config, GM_notification, GM_registerMenuCommand, efinedNationsConfig */
 'use strict';
-let players = [];
 
-// ---- START CUSTOMIZATIONS ----//
-// show all player boards?
-const showAllBoards = true;
-// if showing all player boards, should signed-in user's board be shown in turn order (true) or first (false)?
-const showBoardsInPlayerOrder = false;
-// show Nations header containing game and player information?
-const showHeader = false;
-// hide all extraneous UI?
-const hideChrome = true;
-// show signed-in user's personal notes beside player board?
-const showPersonalNotes = true;
-// enable reload?
-const autoReload = false;
-// if autoReload is enabled, how often page will be reloaded (in minutes)?
-const reloadInterval = 5;
+/**
+ * Initialize config.
+ */
+GM_config.init({
+  id: 'RefinedNationsConfig',
+  title: 'Refined Nations Config',
+  fields: {
+    hideChrome: {
+      section: 'UI',
+      label: 'Hide Extraneous UI',
+      labelPos: 'left',
+      type: 'checkbox',
+      default: true,
+    },
+    hideHeader: {
+      label: 'Hide Game Header',
+      type: 'checkbox',
+      default: true,
+      title: 'Hides the Nations game header containing player info.',
+    },
+    showPersonalNotes: {
+      label: 'Relocate Personal Notes',
+      type: 'checkbox',
+      default: true,
+      title: 'Move personal notes from tab and place next to player board.'
+    },
 
-// customize player order here, or boards will be shown in turn order
-players[0] = ''; // first player (logged-in player will always go first if they are playing in the current game)
-players[1] = ''; // second player
-players[2] = ''; // third player
-players[3] = ''; // fourth player
-players[4] = ''; // fifth player
-players[5] = ''; // sixth player
+    autoReload: {
+      section: [
+        'Auto-Reloading',
+        'If you are a player in the game, this will auto-reload the page.  When it is your turn, you will get a browser notification.',
+      ],
+      label: 'Enable Auto-Reloading',
+      labelPos: 'left',
+      type: 'checkbox',
+      default: false,
+    },
+    reloadInterval: {
+      label: 'Interval (minutes)',
+      labelPos: 'left',
+      type: 'unsigned int',
+      size: 2,
+      default: 5,
+      title: 'Interval between reloads',
+    },
 
-// ---- END CUSTOMIZATIONS ----//
+    showAllBoards: {
+      section: 'Player Boards',
+      label: 'Show All Boards',
+      labelPos: 'left',
+      type: 'checkbox',
+      default: true,
+    },
+    showBoardsInPlayerOrder: {
+      label: 'Show My Board In Player Order',
+      type: 'checkbox',
+      default: false,
+      title: 'By default, your board will always be first.  Enabling this will place your board in turn order.'
+    },
 
-if (hideChrome) {
+    player1: {
+      section: [
+        'Board Order',
+        'This controls the ordering of player boards when showing all boards.  Do not include yourself in this list.  ' +
+        'Listed players that are not in the game will be ignored.  ' +
+        'Players in the game that are not listed will have their boards displayed in turn order.'
+      ],
+      label: 'Player',
+      labelPos: 'left',
+      type: 'text',
+      default: '',
+    },
+    player2: {
+      label: 'Player',
+      type: 'text',
+      default: '',
+    },
+    player3: {
+      label: 'Player',
+      type: 'text',
+      default: '',
+    },
+    player4: {
+      label: 'Player',
+      type: 'text',
+      default: '',
+    },
+    player5: {
+      label: 'Player',
+      type: 'text',
+      default: '',
+    },
+    player6: {
+      label: 'Player',
+      type: 'text',
+      default: '',
+    },
+  },
+  events: {
+    save: () => {
+      GM_config.close();
+      window.location.reload();
+    },
+  },
+  css: `
+#RefinedNationsConfig_header.config_header.center {
+  padding: 0;
+}
+#RefinedNationsConfig .center {
+  text-align: inherit;
+  padding: 4px;
+}
+#RefinedNationsConfig .section_desc {
+  border: none;
+  margin: 0;
+}
+#RefinedNationsConfig .section_header_holder {
+  margin-top: 1em;
+}
+#RefinedNationsConfig .section_header_holder > div:nth-of-type(2) {
+  margin-top: 0.5em;
+}
+[type="checkbox"] {
+  vertical-align: middle;
+}
+`,
+});
+GM_registerMenuCommand('Refined Nations Settings', () => {
+  GM_config.open();
+  RefinedNationsConfig.style.maxHeight = '58em';
+  RefinedNationsConfig.style.maxWidth = '35em';
+});
+
+
+
+if (GM_config.get('hideChrome')) {
   console.log('hiding extraneous padding');
   GM_addStyle(`
 body > table:first-of-type {
@@ -72,13 +184,31 @@ body > table:nth-of-type(4) > tbody> tr:first-of-type > td:nth-of-type(5) {
 `);
 }
 
+
+
+// don't continue if signed out
 const header = document.getElementById('nations-gameheader');
 if (header.innerHTML.match('Game finished')) {
   console.log('Game over...');
+  // noinspection JSAnnotator
   return;
 }
 
-if (!showHeader) {
+// get game ID and URL
+// it is sometimes unavailable, and we don't want to continue if that's the case
+const urlMatch = window.location.href.match(/g_id=([0-9]+)/);
+if (!urlMatch) {
+  console.log('CANNOT DETERMINE GAME ID!');
+  // noinspection JSAnnotator
+  return;
+}
+console.log('Game ID:', urlMatch[1]);
+const gameUrl = `http://www.mabiweb.com/modules.php?name=GM_Nations&g_id=${urlMatch[1]}&op=view_game_reset`;
+console.log('Reload URL:', gameUrl);
+
+
+
+if (GM_config.get('hideHeader')) {
   console.log('hiding header');
   GM_addStyle(`
 #nations-gameheader {
@@ -87,34 +217,26 @@ if (!showHeader) {
 `);
 }
 
-const logoutLink = document.querySelector('a[href="modules.php?name=Your_Account&op=logout"]');
+
+
 // get username
 let username = '';
-console.log(logoutLink);
+const logoutLink = document.querySelector('a[href="modules.php?name=Your_Account&op=logout"]');
 if (logoutLink) {
   const welcomeText = logoutLink.parentNode.innerHTML;
   const match = welcomeText.match(/Welcome (\w+)!/);
   if (match) {
     username = match[1];
   }
-  console.log('Username:', username);
+  console.log('Logged in as', username);
 }
 
-// get game ID and URL
-let url = window.location.href;
-const urlMatch = url.match(/g_id=([0-9]+)/);
-if (!urlMatch) {
-  console.log('CANNOT DETERMINE GAME ID!');
-  return;
-}
-console.log('Game ID:', urlMatch[1]);
-const gameUrl = `http://www.mabiweb.com/modules.php?name=GM_Nations&g_id=${urlMatch[1]}&op=view_game_reset`;
-console.log('URL:', gameUrl);
 
 // get round #
 const match = header.innerHTML.match(/round:\s*(<b>.*?<\/b>)\s*<br>(.*?)<br>/m);
 if (!match) {
   console.error('CANNOT DETERMINE PLAYERS!');
+  // noinspection JSAnnotator
   return;
 }
 const round = match[1];
@@ -124,41 +246,43 @@ const playerString = match[2];
 let currentPlayer = playerString.match(/<b>(.+?)<\/b>/m)[1];
 console.log('Current player is', currentPlayer);
 
-// get players and player levels
+// get player order and levels
 // player level will be empty in games where difficulty is set for everyone
-const playerInfoRegex = />(\w+)(?:<\/b>)?( \(lv\. [1-4]\))?&nbsp;/gm
-let rez;
 const playerOrder = [];
 const playerLevels = {};
+const playerInfoRegex = />(\w+)(?:<\/b>)?( \(lv\. [1-4]\))?&nbsp;/gm
+let rez;
 while (rez = playerInfoRegex.exec(playerString)) {
   playerOrder.push(rez[1]);
   playerLevels[rez[1]] = rez[2];
 }
-console.log('player order:', playerOrder);
-console.log(playerLevels);
+console.log('Player order:', playerOrder);
+console.log('Player levels:', playerLevels);
 
-const userIsPlaying = playerLevels.hasOwnProperty(username);
+// determine board order
+const players = [];
+const userIsPlaying = playerOrder.includes(username);
 if (userIsPlaying) {
   console.log('Player is in this game!');
-  if (!showBoardsInPlayerOrder) {
+  if (!GM_config.get('showBoardsInPlayerOrder')) {
     console.log('Making player\'s board first');
-    players[0] = username;
+    players.push(username);
   }
 }
-// remove players not in current game
-for (let x = 0; x < players.length; x++) {
-  if (players[x]) {
-    const idx = playerOrder.indexOf(players[x]);
-    if (idx === -1) {
-      players[x] = '';
-    } else {
-      playerOrder[idx] = '';
-    }
+for (let x = 1; x < 7; x++) {
+  const pid = GM_config.get(`player${x}`);
+  if (pid && playerOrder.includes(pid)) {
+    players.push(pid);
   }
 }
-// remove empty player entries
-players = players.filter((v) => v).concat(playerOrder.filter((v) => v));
-console.log('board order:', players);
+for (let x = 0; x < playerOrder.length; x++) {
+  if (!players.includes(playerOrder[x])) {
+    players.push(playerOrder[x]);
+  }
+}
+console.log('Board order:', players);
+
+const autoReload = GM_config.get('autoReload') && userIsPlaying;
 
 
 // player actions only available when it's the player's turn
@@ -179,6 +303,7 @@ if (playerActions) {
     });
   }
 }
+
 
 // move resource tracks into a main game div
 const tracks = document.getElementById('nations-tracks');
@@ -241,7 +366,7 @@ if (tracksTable) {
   };
   buttonDiv.appendChild(reloadButton);
 
-  if (autoReload && userIsPlaying) {
+  if (autoReload) {
     // add auto-reload indicator
     const reloadMsg = document.createElement('div');
     reloadMsg.style.fontSize = '8pt';
@@ -249,7 +374,6 @@ if (tracksTable) {
     reloadMsg.innerHTML = 'auto-reload enabled';
     buttonDiv.appendChild(reloadMsg);
   }
-
   statusTd.appendChild(buttonDiv);
 
 
@@ -280,6 +404,7 @@ if (tracksTable) {
     tracks.appendChild(playerActions);
   }
 }
+
 
 // add level and current player info to tabs
 const tabList = document.querySelector('#placeholder ul');
@@ -312,6 +437,8 @@ if (tabList) {
   }
 }
 
+
+// move recent actiosn
 const nationsBoardImg = document.getElementById('nations-board_image');
 if (nationsBoardImg) {
   console.log('Moving recent actions section');
@@ -333,10 +460,10 @@ if (p1) {
   p1.style.display = 'block';
   addProductionTable(players[0], p1);
 
-  if (showAllBoards) {
+  if (GM_config.get('showAllBoards')) {
     for (let x = 5; x > 0; x--) {
       if (players[x]) {
-        console.log('player', x, ':', players[x]);
+        console.log('Player', x, '-', players[x]);
         showBoard(p1, players[x]);
       }
     }
@@ -344,7 +471,7 @@ if (p1) {
 }
 
 
-if (autoReload && userIsPlaying) {
+if (autoReload) {
   console.log('Auto-reload enabled');
   if (currentPlayer === username) {
     console.log('...but it\'s your turn');
@@ -352,6 +479,7 @@ if (autoReload && userIsPlaying) {
       GM_notification(`It's your turn!`, 'Nations@Mabi Web', '', () => window.focus());
     }
   } else {
+    const reloadInterval = GM_config.get('reloadInterval');
     if (reloadInterval > 0) {
       console.log(`Will reload in ${reloadInterval} minute${reloadInterval > 1 ? 's' : ''}`);
       setTimeout(() => { window.location.href = gameUrl + '&reloaded=true'; }, 60000 * reloadInterval);
@@ -435,7 +563,7 @@ function addProductionTable(playerId, playerNode) {
  * Makes a user's personal notes visible.
  */
 function movePersonalNotes(playerNode) {
-  if (showPersonalNotes) {
+  if (GM_config.get('showPersonalNotes')) {
     const notesForm = document.querySelector('#personal_notes form');
     if (notesForm) {
       const textarea = document.querySelector('#personal_notes textarea');
