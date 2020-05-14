@@ -117,7 +117,7 @@ GM_config.init({
   events: {
     save: () => {
       GM_config.close();
-      window.location.reload();
+      window.location.href = gameUrl;
     },
   },
   css: `
