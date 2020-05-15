@@ -17,9 +17,10 @@
       "@semantic-release/commit-analyzer",
       "@semantic-release/release-notes-generator",
       "@semantic-release/github"
-    ]
+    ],
+    "ci": false
   },
   "scripts": {
-    "dsemantic-release": "semantic-release -d pre && semantic-release -d post"
+    "semantic-release": "semantic-release"
   }
 }
