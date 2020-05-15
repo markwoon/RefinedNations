@@ -1,0 +1,25 @@
+{
+  "name": "react-nations",
+  "version": "3.0.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/markwoon/RefinedNations.git"
+  },
+  "private": true,
+  "devDependencies": {
+    "eslint": "^6.8.0",
+    "semantic-release": "^17.0.7",
+    "semantic-release-cli": "^5.3.0"
+  },
+  "release": {
+    "branches": ["master"],
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      "@semantic-release/github"
+    ]
+  },
+  "scripts": {
+    "dsemantic-release": "semantic-release -d pre && semantic-release -d post"
+  }
+}
