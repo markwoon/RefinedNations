@@ -13,7 +13,7 @@
 // @noframes
 // ==/UserScript==
 /* jshint esversion: 6 */
-/* global GM_addStyle, GM_config, GM_notification, GM_registerMenuCommand, efinedNationsConfig */
+/* global GM_config, RefinedNationsConfig */
 'use strict';
 
 /**
@@ -143,6 +143,7 @@ GM_config.init({
 }
 `,
 });
+// noinspection JSUnresolvedFunction
 GM_registerMenuCommand('Refined Nations Settings', () => {
   GM_config.open();
   RefinedNationsConfig.style.maxHeight = '58em';
@@ -153,6 +154,7 @@ GM_registerMenuCommand('Refined Nations Settings', () => {
 
 if (GM_config.get('hideChrome')) {
   console.log('hiding extraneous padding');
+  // noinspection JSUnresolvedFunction
   GM_addStyle(`
 body > table:first-of-type {
   display: none;
@@ -210,6 +212,7 @@ console.log('Reload URL:', gameUrl);
 
 if (GM_config.get('hideHeader')) {
   console.log('hiding header');
+  // noinspection JSUnresolvedFunction
   GM_addStyle(`
 #nations-gameheader {
   display: none;
@@ -252,7 +255,7 @@ const playerOrder = [];
 const playerLevels = {};
 const playerInfoRegex = />(\w+)(?:<\/b>)?( \(lv\. [1-4]\))?&nbsp;/gm
 let rez;
-while (rez = playerInfoRegex.exec(playerString)) {
+while ((rez = playerInfoRegex.exec(playerString))) {
   playerOrder.push(rez[1]);
   playerLevels[rez[1]] = rez[2];
 }
@@ -476,6 +479,7 @@ if (autoReload) {
   if (currentPlayer === username) {
     console.log('...but it\'s your turn');
     if (window.location.href.indexOf('&reloaded=true') !== -1) {
+      // noinspection JSUnresolvedFunction
       GM_notification(`It's your turn!`, 'Nations@Mabi Web', '', () => window.focus());
     }
   } else {
