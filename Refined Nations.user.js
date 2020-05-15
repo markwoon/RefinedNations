@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Refined Nations
-// @version      3.0.1
+// @version      3.0.2
 // @description  UI tweaks for MaBi Web Nations
 // @match        http://www.mabiweb.com/modules.php?name=GM_Nations*
 // @author       Mark Woon
