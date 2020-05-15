@@ -280,7 +280,7 @@ if (userIsPlaying) {
 }
 for (let x = 1; x < 7; x++) {
   const pid = GM_config.get(`player${x}`);
-  if (pid && playerOrder.includes(pid)) {
+  if (pid && playerOrder.includes(pid) && !players.includes(pid)) {
     players.push(pid);
   }
 }
