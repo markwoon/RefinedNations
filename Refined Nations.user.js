@@ -17,6 +17,14 @@
 'use strict';
 
 /**
+ * GM_config save callback to close settings panel and reload page to apply changes.
+ */
+const onSaveConfig = () => {
+  GM_config.close();
+  window.location.href = gameUrl;
+}
+
+/**
  * Initialize config.
  */
 GM_config.init({
@@ -115,10 +123,7 @@ GM_config.init({
     },
   },
   events: {
-    save: () => {
-      GM_config.close();
-      window.location.href = gameUrl;
-    },
+    save: onSaveConfig,
   },
   css: `
 #RefinedNationsConfig_header.config_header.center {
@@ -226,6 +231,7 @@ if (GM_config.get('hideHeader')) {
 let username = '';
 const logoutLink = document.querySelector('a[href="modules.php?name=Your_Account&op=logout"]');
 if (logoutLink) {
+  // noinspection JSUnresolvedVariable
   const welcomeText = logoutLink.parentNode.innerHTML;
   const match = welcomeText.match(/Welcome (\w+)!/);
   if (match) {
