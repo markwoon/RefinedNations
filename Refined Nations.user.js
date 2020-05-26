@@ -561,7 +561,10 @@ function addProductionTable(playerId, playerNode) {
       let productionTable = match[1];
       // strip out style because it's using JS escapes
       productionTable = productionTable.replace(/style=\\'.*?\\'/mg, '');
-      productionTable = productionTable.replace(/<TD><IMG/mg, '<TD style="font-size: 14pt;"><IMG style="position: relative;"');
+      productionTable = productionTable.replace(/<TD><IMG/mg, '<TD style="font-size: 14pt; vertical-align: top;"><IMG style="position: relative; height: 30px;"');
+      productionTable = productionTable.replace(/width="30"/mg, '');
+      productionTable = productionTable.replace(/\(/, '<br /><span style="font-size: 0.8em">(');
+      productionTable = productionTable.replace(/\)/, ')</font>');
 
       const div = document.createElement('div');
       div.innerHTML = productionTable;
@@ -590,14 +593,14 @@ function movePersonalNotes(playerNode) {
     const notesForm = document.querySelector('#personal_notes form');
     if (notesForm) {
       const textarea = document.querySelector('#personal_notes textarea');
-      textarea.style.width = '300px';
+      textarea.style.width = '290px';
       textarea.style.height = '300px';
 
       const div = document.createElement('div');
       div.appendChild(notesForm);
       div.style.position = 'absolute';
       div.style.left = '1070px';
-      div.style.top = '13em';
+      div.style.top = '14em';
       playerNode.appendChild(div);
 
       const tab = document.querySelector('#placeholder ul.tab li:last-child');
