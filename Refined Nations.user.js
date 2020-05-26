@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Refined Nations
-// @version      3.0.2
+// @version      3.0.3
 // @description  UI tweaks for MaBi Web Nations
 // @match        http://www.mabiweb.com/modules.php?name=GM_Nations*
 // @author       Mark Woon
@@ -209,8 +209,9 @@ if (!urlMatch) {
   // noinspection JSAnnotator
   return;
 }
-console.log('Game ID:', urlMatch[1]);
-const gameUrl = `http://www.mabiweb.com/modules.php?name=GM_Nations&g_id=${urlMatch[1]}&op=view_game_reset`;
+const gameId = urlMatch[1];
+console.log('Game ID:', gameId);
+const gameUrl = `http://www.mabiweb.com/modules.php?name=GM_Nations&g_id=${gameId}&op=view_game_reset`;
 console.log('Reload URL:', gameUrl);
 
 
@@ -294,6 +295,15 @@ console.log('Board order:', players);
 const autoReload = GM_config.get('autoReload') && userIsPlaying;
 
 
+// add option to change player colors at the top
+if (userIsPlaying) {
+  const options = document.querySelector('body > table:nth-of-type(2) > tbody> tr:nth-of-type(2) > td:nth-of-type(2) > font > b');
+  const colorOpt = document.createElement('span');
+  colorOpt.innerHTML = `&nbsp;·&nbsp;<a href="http://www.mabiweb.com/modules.php?name=GM_Nations&g_id=${gameId}&op=change_colors_form">Change Player Colors</a>`;
+  options.appendChild(colorOpt);
+}
+
+
 // player actions only available when it's the player's turn
 let playerActions = document.querySelector('#nations-gameheader table');
 if (playerActions) {
@@ -369,7 +379,7 @@ if (tracksTable) {
   const buttonDiv = document.createElement('div');
   buttonDiv.style.display = 'inline-block';
   const reloadButton = document.createElement('button');
-  reloadButton.innerHTML = 'Reload Page';
+  reloadButton.innerHTML = 'Refresh Page';
   reloadButton.onclick = () => {
     window.location.href = gameUrl;
   };
@@ -391,6 +401,9 @@ if (tracksTable) {
 
   const actions = document.getElementById('nations-actions');
   if (actions) {
+    const actionRow = actions.children[0].children[0].children[0];
+    actionRow.removeChild(actionRow.children[2]);
+    actionRow.children[1].style.border = 'none';
     addTrackCell(actions);
     addTrackSpacer();
     addTrackCell(justice, military, science);
