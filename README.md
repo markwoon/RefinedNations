@@ -18,8 +18,14 @@ Additional features:
 * Can be configured to send notifications to Slack to speed up real-time play.
 * If you are playing multiple games at once, you can add game information into the settings panel to get a drop down menu of you games in the header.
 
-
 <img src="images/nations.png" width="600" alt="Example game" />
+
+Warning: this has only been tested in Chrome and Tampermonkey.
+
+Suggestions/contributions welcome.
+
+
+## Settings Panel
 
 To configure the script, go to the script's settings:
 
@@ -29,13 +35,9 @@ You should get a settings panel that looks like:
 
 <img src="images/config.png" width="600" alt="Settings panel" />
 
-This has only been tested in Chrome and Tampermonkey.
-
-Suggestions/contributions welcome.
 
 
-
-### Game Config
+## Game Config
 
 If you configure the games you're playing, React Nations will add a game menu to the header to allow you to easily switch between games.  It's currently capped at 5 games.
 
@@ -60,7 +62,7 @@ One you've added that, you'll see your games show up in the header:
 
 
 
-### Slack Integration
+## Slack Integration
 
 Refined Nations uses a Slack's `Incoming Webhook` integration to post to your Slack channel.  Follow [these instructions from Slack](https://api.slack.com/messaging/webhooks) to set it up, then copy the Webhook URL into the settings panel. 
 
