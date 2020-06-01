@@ -200,6 +200,31 @@ GM_config.init({
       size: 40,
       title: 'The Slack Webhook URL to post to whenever you complete your move',
     },
+
+    slackDisplayName: {
+      section: [
+        'Slack',
+        'This is only used if you have Slack configured above.  These settings apply to all games.',
+      ],
+      label: 'Display Name',
+      labelPos: 'left',
+      type: 'string',
+      default: '',
+      title: 'The name to use when announcing your move.  Defaults to Mabi Web user ID if not specified.'
+    },
+    slackDescriptiveMove: {
+      label: 'Descriptive Moves',
+      type: 'checkbox',
+      default: false,
+      title: 'Detail move in message'
+    },
+    slackEmojis: {
+      label: 'Use Emojis',
+      type: 'checkbox',
+      default: false,
+      title: 'Use emojis.  Requires Nations emojis to be installed.'
+    },
+
   },
   events: {
     save: onSaveConfig,
@@ -272,7 +297,7 @@ body > table:nth-of-type(4) > tbody> tr:first-of-type > td:nth-of-type(5) {
 
 
 
-// don't continue if signed out
+// don't continue if game is over
 const header = document.getElementById('nations-gameheader');
 if (header.innerHTML.match('Game finished')) {
   console.log('Game over...');
@@ -318,6 +343,18 @@ if (logoutLink) {
     username = match[1];
   }
   console.log('Logged in as', username);
+
+  const menu = loadGameMenu();
+  if (menu) {
+    const tr = logoutLink.parentNode.parentNode.parentNode.parentNode;
+    tr.children[0].width = '35%';
+    tr.children[1].width = '50%';
+    tr.children[2].width = '15%';
+    const node = document.createElement('span');
+    node.innerHTML = '<b style="margin-left: 4em;">Games:&nbsp;</b>';
+    node.appendChild(menu);
+    tr.children[0].appendChild(node);
+  }
 }
 
 
@@ -496,8 +533,11 @@ if (tracksTable) {
         const node = endTurnCell.children[x];
         if (node.nodeName === 'A') {
           // add onclick handler to send slack notification
-          node.onclick = () => {
-            sendSlackNotification();
+          // eslint-disable-next-line no-unused-vars
+          node.onclick = async (evt) => {
+            //evt.preventDefault();
+            //evt.stopPropagation();
+            await sendSlackNotification();
           }
         }
       }
@@ -708,48 +748,72 @@ function movePersonalNotes(playerNode) {
 }
 
 
+
+function loadGameMenu() {
+  const configs = [];
+  for (let x = 1; x < 6; x++) {
+    const config = getGameConfig(x);
+    if (config) {
+      configs.push(config);
+    }
+  }
+  if (configs.length > 0) {
+    const select = document.createElement('select')
+    for (let x = 0; x < configs.length; x++) {
+      const config = configs[x];
+      const option = document.createElement('option');
+      option.value = `http://www.mabiweb.com/modules.php?name=GM_Nations&g_id=${config.id}&op=view_game_reset`;
+      option.text = config.name ? config.name : `Game ${config.id}`;
+      if (config.id === gameId) {
+        option.selected = 'selected';
+      }
+      select.appendChild(option);
+    }
+    select.onchange = (evt) => {
+      window.location.href = evt.target.value;
+    };
+    return select;
+  }
+}
+
+
 /**
  * Loads game config, if any.
  */
 function loadGameConfig() {
   for (let x = 1; x < 6; x++) {
-    const config = findGameConfig(x);
-    if (config) {
+    const config = getGameConfig(x);
+    if (config.id === gameId) {
       console.log('Found game config:', config);
       return config;
     }
   }
 }
 
-/**
- * Looks for game config.
- */
-function findGameConfig(num) {
+
+function getGameConfig(num) {
   const nameInfo = trim(GM_config.get(`game${num}Id`));
   if (nameInfo) {
     const config = {};
     const idx = nameInfo.indexOf(':');
-    if (idx != -1) {
+    if (idx !== -1) {
       const id = trim(nameInfo.substring(0, idx));
       let name = trim(nameInfo.substring(idx + 1, nameInfo.length));
-      if (id === gameId) {
-        config.id = id;
-        config.name = name;
-        config.slack = trim(GM_config.get(`game${num}Slack`));
-        return config;
-      }
+      config.id = id;
+      config.name = name;
+      config.slack = trim(GM_config.get(`game${num}Slack`));
     } else {
-      if (nameInfo === gameId) {
-        config.id = nameInfo;
-        config.slack = trim(GM_config.get(`game${num}Slack`));
-        return config;
-      }
+      config.id = nameInfo;
+      config.slack = trim(GM_config.get(`game${num}Slack`));
     }
+    return config;
   }
-  return null;
 }
 
 
+/**
+ * Trim spaces from start and end of a string.
+ */
 function trim(value) {
   if (typeof value === 'string') {
     return value.replace(/^\s+|\s+$/g,'');
@@ -762,25 +826,105 @@ function trim(value) {
  * Sends Slack end-turn notification.
  */
 async function sendSlackNotification() {
-  const log = document.getElementById('nations-recentlog');
-  const passed = log && log.children[log.children.length - 1].innerHTML.indexOf(`${username}: pass`) != -1;
-
   try {
-    const action = passed ? 'passed' : 'made a move';
-    let name = '';
-    if (gameConfig.name) {
-      name = `in <${gameUrl}|${gameConfig.name}>`;
-    } else {
-      name = `in <${gameUrl}|game ${gameId}>`;
-    }
     const data = {
-      text: `${username} ${action} ${name}`,
-    };
-    await fetch(gameConfig.slack, {
+      text: `${getSlackName()} ${getSlackActionText()} ${getSlackGameLink()}`,
+    }
+    const response = await fetch(gameConfig.slack, {
       method: 'post',
       body: JSON.stringify(data)
     });
+    if (response.status !== 200) {
+      console.error('Slack responded with ', response.status);
+    }
   } catch (error) {
     console.error('Error posting to slack', error);
   }
+}
+
+/**
+ * Gets user name for Slack message.
+ */
+function getSlackName() {
+  const name = trim(GM_config.get('slackDisplayName'));
+  if (name) {
+    return name;
+  }
+  return username;
+}
+
+/**
+ * Gets action for Slack message.
+ */
+function getSlackActionText() {
+  const log = document.getElementById('nations-recentlog');
+  let action = log ? trim(log.children[log.children.length - 1].innerHTML) : '';
+
+  if (GM_config.get('slackDescriptiveMove')) {
+    return getSlackFancyActionText(action);
+  } else {
+    return getSlackSimpleActionText(action);
+  }
+}
+
+function getSlackSimpleActionText(action) {
+  return action.indexOf(`${username}: pass`) !== -1 ? 'passed' : 'made a move';
+}
+
+function getSlackFancyActionText(action) {
+  const idx = action.indexOf(`${username}: `);
+  if (idx === -1) {
+    return getSlackSimpleActionText(action);
+  }
+  action = action.substring(idx + username.length + 2, action.length);
+
+  if (action !== 'pass') {
+    action = action.replace(/<img width="27" src="modules\/GM_Nations\/images\/(?:Token_)?Heritage\.png" style="vertical-align: middle; margin: 3">/g, ':nations_book:');
+    action = action.replace(/<img width="27" src="modules\/GM_Nations\/images\/Token_([A-Za-z]+)\.png" style="vertical-align: middle; margin: 3">/g, ':$1:');
+    action = action.replace(/<img width="27" src="modules\/GM_Nations\/images\/Meeple_([A-Za-z]+)\.png" style="vertical-align: middle; margin: 3">/g, ':meeple_$1:');
+    action = action.replace(/(?:'(.+?)') <img width="25" src="modules\/GM_Nations\/images\/Progress_Cards\/(?:.+?)\.jpg" onmouseover=".+?" style="vertical-align: middle; margin: 3">/g,
+        '_$1_ ');
+    action = action.replace(/[Bb]uy /, 'bought ')
+        .replace('deploy ', 'deployed ')
+        .replace('hire ', 'hired ')
+        .replace(/ +paying /, ', paid ')
+        .replace(/^place /, 'placed ')
+        .replace('replace ', 'replaced ')
+        .replace(/take /g, 'took ')
+        .replace(', took ', 'and took ')
+        .replace('may took', 'may take')
+        .replace(/ +/g, ' ')
+    ;
+
+    if (!GM_config.get('slackEmojis')) {
+      action = action
+          .replace(/:meeple_[A-Za-z]+?:/, ' worker')
+          .replace(/([0-9]+) ?:gold:/i, '$$1')
+          .replace(/([0-9]+) ?:([A-Za-z_]+):/i, (text, g1, g2) => {
+            let noun = g2.toLowerCase();
+            if (noun === 'nations_book') {
+              noun = 'book';
+            } else if (noun === 'vp') {
+              noun = 'VP';
+            }
+            if (g1 > 1) {
+              return `${g1} ${noun}s`;
+            }
+            return `1 ${noun}`;
+          })
+      ;
+    }
+    return action;
+  }
+  return 'passed';
+}
+
+/**
+ * Gets game link for Slack message.
+ */
+function getSlackGameLink() {
+  if (gameConfig.name) {
+    return `in <${gameUrl}|${gameConfig.name}>`;
+  }
+  return `in <${gameUrl}|game ${gameId}>`;
 }
