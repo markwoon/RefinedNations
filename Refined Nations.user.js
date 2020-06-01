@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Refined Nations
-// @version      3.0.3
+// @version      3.1.0
 // @description  UI tweaks for MaBi Web Nations
 // @match        http://www.mabiweb.com/modules.php?name=GM_Nations*
 // @author       Mark Woon
@@ -120,6 +120,85 @@ GM_config.init({
       label: 'Player',
       type: 'text',
       default: '',
+    },
+    //
+    game1Id: {
+      section: [
+        'Games',
+        'This section facilitates playing multiple games at a time.'
+      ],
+      label: 'Game 1',
+      labelPos: 'left',
+      type: 'text',
+      default: '',
+      title: 'Format = "Game ID:Game Name"',
+    },
+    game1Slack: {
+      label: 'Slack Webhook',
+      type: 'text',
+      default: '',
+      size: 40,
+      title: 'The Slack Webhook URL to post to whenever you complete your move',
+    },
+    //
+    game2Id: {
+      label: 'Game 2',
+      labelPos: 'left',
+      type: 'text',
+      default: '',
+      title: 'Format = "Game ID:Game Name"',
+    },
+    game2Slack: {
+      label: 'Slack Webhook',
+      type: 'text',
+      default: '',
+      size: 40,
+      title: 'The Slack Webhook URL to post to whenever you complete your move',
+    },
+    //
+    game3Id: {
+      label: 'Game 3',
+      labelPos: 'left',
+      type: 'text',
+      default: '',
+      title: 'Format = "Game ID:Game Name"',
+    },
+    game3Slack: {
+      label: 'Slack Webhook',
+      type: 'text',
+      default: '',
+      size: 40,
+      title: 'The Slack Webhook URL to post to whenever you complete your move',
+    },
+    //
+    game4Id: {
+      label: 'Game 4',
+      labelPos: 'left',
+      type: 'text',
+      default: '',
+      title: 'Format = "Game ID:Game Name"',
+    },
+    game4Slack: {
+      label: 'Slack Webhook',
+      type: 'text',
+      default: '',
+      size: 40,
+      title: 'The Slack Webhook URL to post to whenever you complete your move',
+    },
+    //
+    game5Id: {
+      label: 'Game 5',
+      labelPos: 'left',
+      type: 'text',
+      default: '',
+      title: 'Format = "Game ID:Game Name"',
+    },
+    game5Slack: {
+      label: 'Slack Webhook',
+      type: 'text',
+      default: '',
+      size: 40,
+      title: 'The Slack Webhook URL to post to whenever you complete your move',
     },
   },
   events: {
@@ -294,6 +373,9 @@ console.log('Board order:', players);
 
 const autoReload = GM_config.get('autoReload') && userIsPlaying;
 
+// see if we have advanced directives for this game
+const gameConfig = userIsPlaying ? loadGameConfig() : null;
+
 
 // add option to change player colors at the top
 if (userIsPlaying) {
@@ -407,6 +489,20 @@ if (tracksTable) {
     addTrackCell(actions);
     addTrackSpacer();
     addTrackCell(justice, military, science);
+
+    if (gameConfig && gameConfig.slack) {
+      const endTurnCell = actionRow.children[1]
+      for (let x = 0; x < endTurnCell.children.length; x++) {
+        const node = endTurnCell.children[x];
+        if (node.nodeName === 'A') {
+          // add onclick handler to send slack notification
+          node.onclick = () => {
+            sendSlackNotification();
+          }
+        }
+      }
+    }
+
   } else {
     addTrackCell(justice);
     addTrackSpacer();
@@ -460,7 +556,7 @@ if (tabList) {
 }
 
 
-// move recent actiosn
+// move recent action
 const nationsBoardImg = document.getElementById('nations-board_image');
 if (nationsBoardImg) {
   console.log('Moving recent actions section');
@@ -608,5 +704,83 @@ function movePersonalNotes(playerNode) {
         tab.parentNode.removeChild(tab);
       }
     }
+  }
+}
+
+
+/**
+ * Loads game config, if any.
+ */
+function loadGameConfig() {
+  for (let x = 1; x < 6; x++) {
+    const config = findGameConfig(x);
+    if (config) {
+      console.log('Found game config:', config);
+      return config;
+    }
+  }
+}
+
+/**
+ * Looks for game config.
+ */
+function findGameConfig(num) {
+  const nameInfo = trim(GM_config.get(`game${num}Id`));
+  if (nameInfo) {
+    const config = {};
+    const idx = nameInfo.indexOf(':');
+    if (idx != -1) {
+      const id = trim(nameInfo.substring(0, idx));
+      let name = trim(nameInfo.substring(idx + 1, nameInfo.length));
+      if (id === gameId) {
+        config.id = id;
+        config.name = name;
+        config.slack = trim(GM_config.get(`game${num}Slack`));
+        return config;
+      }
+    } else {
+      if (nameInfo === gameId) {
+        config.id = nameInfo;
+        config.slack = trim(GM_config.get(`game${num}Slack`));
+        return config;
+      }
+    }
+  }
+  return null;
+}
+
+
+function trim(value) {
+  if (typeof value === 'string') {
+    return value.replace(/^\s+|\s+$/g,'');
+  }
+  return value;
+}
+
+
+/**
+ * Sends Slack end-turn notification.
+ */
+async function sendSlackNotification() {
+  const log = document.getElementById('nations-recentlog');
+  const passed = log && log.children[log.children.length - 1].innerHTML.indexOf(`${username}: pass`) != -1;
+
+  try {
+    const action = passed ? 'passed' : 'made a move';
+    let name = '';
+    if (gameConfig.name) {
+      name = `in <${gameUrl}|${gameConfig.name}>`;
+    } else {
+      name = `in <${gameUrl}|game ${gameId}>`;
+    }
+    const data = {
+      text: `${username} ${action} ${name}`,
+    };
+    await fetch(gameConfig.slack, {
+      method: 'post',
+      body: JSON.stringify(data)
+    });
+  } catch (error) {
+    console.error('Error posting to slack', error);
   }
 }
