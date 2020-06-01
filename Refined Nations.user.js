@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Refined Nations
-// @version      3.1.1
+// @version      3.1.2
 // @description  UI tweaks for MaBi Web Nations
 // @match        http://www.mabiweb.com/modules.php?name=GM_Nations*
 // @author       Mark Woon
@@ -318,6 +318,9 @@ console.log('Game ID:', gameId);
 const gameUrl = `http://www.mabiweb.com/modules.php?name=GM_Nations&g_id=${gameId}&op=view_game_reset`;
 console.log('Reload URL:', gameUrl);
 
+// add game id to footer
+const footer = document.getElementById('nations-gamefooter');
+footer.innerHTML = footer.innerHTML + `<br><br>GAME ID:${gameId}`;
 
 
 if (GM_config.get('hideHeader')) {

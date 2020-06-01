@@ -1,6 +1,6 @@
 # RefinedNations
 
-[![GreasyFork](https://img.shields.io/badge/GreasyFork-3.1.1-green)](https://greasyfork.org/en/scripts/403128-refined-nations)
+[![GreasyFork](https://img.shields.io/badge/GreasyFork-3.1.2-green)](https://greasyfork.org/en/scripts/403128-refined-nations)
 
 This is a userscript for Nations on MaBi Web.
 
@@ -25,6 +25,7 @@ Warning: this has only been tested in Chrome and Tampermonkey.
 Suggestions/contributions welcome.
 
 
+
 ## Settings Panel
 
 To configure the script, go to the script's settings:
@@ -37,7 +38,7 @@ You should get a settings panel that looks like:
 
 
 
-## Game Config
+### Game Config
 
 If you configure the games you're playing, React Nations will add a game menu to the header to allow you to easily switch between games.  It's currently capped at 5 games.
 
@@ -61,10 +62,9 @@ One you've added that, you'll see your games show up in the header:
 
 
 
+### Slack Integration
 
-## Slack Integration
-
-Refined Nations uses a Slack's `Incoming Webhook` integration to post to your Slack channel.  Follow [these instructions from Slack](https://api.slack.com/messaging/webhooks) to set it up, then copy the Webhook URL into the settings panel. 
+Refined Nations uses a Slack's `Incoming Webhook` integration to post to your Slack channel.  Follow [these instructions from Slack](https://api.slack.com/messaging/webhooks) to set it up, then copy the Webhook URL into the settings panel.
 
 If you want notifications with emojis, you'll have to add them to Slack.
 
