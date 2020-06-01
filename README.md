@@ -43,15 +43,15 @@ If you want notifications with emojis, you'll have to add them to Slack.
 
 | name | image |
 | --- | --- |
-| :food: | [food](http://www.mabiweb.com/modules/GM_Nations/images/Token_Food.png) |
-| :stone: | [stone](http://www.mabiweb.com/modules/GM_Nations/images/Token_Stone.png) |
-| :gold: | [gold](http://www.mabiweb.com/modules/GM_Nations/images/Token_Gold.png) |
-| :vp: | [VP](http://www.mabiweb.com/modules/GM_Nations/images/Token_Food.png) |
-| :nations_book: | [book](http://www.mabiweb.com/modules/GM_Nations/images/Token_Heritage.png)|
-| :meeple_blue: | [meeple](http://www.mabiweb.com/modules/GM_Nations/images/Meeple_Blue.png) |
-| :meeple_green: | [meeple](http://www.mabiweb.com/modules/GM_Nations/images/Meeple_Green.png) |
-| :meeple_orange: | [meeple](http://www.mabiweb.com/modules/GM_Nations/images/Meeple_Orange.png) |
-| :meeple_pink: | [meeple](http://www.mabiweb.com/modules/GM_Nations/images/Meeple_Pink.png) |
-| :meeple_purple: | [meeple](http://www.mabiweb.com/modules/GM_Nations/images/Meeple_Purple.png) |
-| :meeple_red: | [meeple](http://www.mabiweb.com/modules/GM_Nations/images/Meeple_Red.png) |
-| :meeple_yellow: | [meeple](http://www.mabiweb.com/modules/GM_Nations/images/Meeple_Yellow.png) |
+| :food: | <img src="http://www.mabiweb.com/modules/GM_Nations/images/Token_Food.png" width="27" /> |
+| :stone: | <img src="http://www.mabiweb.com/modules/GM_Nations/images/Token_Stone.png" width="27" /> |
+| :gold: | <img src="http://www.mabiweb.com/modules/GM_Nations/images/Token_Gold.png" width="27" /> |
+| :vp: | <img src="http://www.mabiweb.com/modules/GM_Nations/images/Token_Food.png" width="27" /> |
+| :nations_book: | <img src="http://www.mabiweb.com/modules/GM_Nations/images/Token_Heritage.png" width="27" />|
+| :meeple_blue: | <img src="http://www.mabiweb.com/modules/GM_Nations/images/Meeple_Blue.png" width="27" /> |
+| :meeple_green: | <img src="http://www.mabiweb.com/modules/GM_Nations/images/Meeple_Green.png" width="27" /> |
+| :meeple_orange: | <img src="http://www.mabiweb.com/modules/GM_Nations/images/Meeple_Orange.png" width="27" /> |
+| :meeple_pink: | <img src="http://www.mabiweb.com/modules/GM_Nations/images/Meeple_Pink.png" width="27" /> |
+| :meeple_purple: | <img src="http://www.mabiweb.com/modules/GM_Nations/images/Meeple_Purple.png" width="27" /> |
+| :meeple_red: | <img src="http://www.mabiweb.com/modules/GM_Nations/images/Meeple_Red.png" width="27" /> |
+| :meeple_yellow: | <img src="http://www.mabiweb.com/modules/GM_Nations/images/Meeple_Yellow.png" width="27" /> |
