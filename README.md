@@ -35,6 +35,31 @@ Suggestions/contributions welcome.
 
 
 
+### Game Config
+
+If you configure the games you're playing, React Nations will add a game menu to the header to allow you to easily switch between games.  It's currently capped at 5 games.
+
+The syntax for the game is "`game id`:`name`".  The name is optional, but will make it much easier to identify which game is which.
+
+What is the game id?  You can find it in the URL of the page:
+
+<img src="images/gameid_url.png" alt="Game ID in URL" width="600" />
+
+Or in the footer:  
+
+<img src="images/gameid_footer.png" alt="Game ID in footer" width="600" />
+
+Example:
+
+![game 1 config](images/game1_config.png)
+
+One you've added that, you'll see your games show up in the header:
+
+<img src="images/game_menu.png" alt="Game menu in header" width="600" />
+
+
+
+
 ### Slack Integration
 
 Refined Nations uses a Slack's `Incoming Webhook` integration to post to your Slack channel.  Follow [these instructions from Slack](https://api.slack.com/messaging/webhooks) to set it up, then copy the Webhook URL into the settings panel. 
