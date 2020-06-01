@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Refined Nations
-// @version      3.1.0
+// @version      3.1.1
 // @description  UI tweaks for MaBi Web Nations
 // @match        http://www.mabiweb.com/modules.php?name=GM_Nations*
 // @author       Mark Woon
@@ -881,7 +881,7 @@ function getSlackFancyActionText(action) {
   if (action !== 'pass') {
     action = action.replace(/<img width="27" src="modules\/GM_Nations\/images\/(?:Token_)?Heritage\.png" style="vertical-align: middle; margin: 3">/g, ':nations_book:');
     action = action.replace(/<img width="27" src="modules\/GM_Nations\/images\/Token_([A-Za-z]+)\.png" style="vertical-align: middle; margin: 3">/g, ':$1:');
-    action = action.replace(/<img width="27" src="modules\/GM_Nations\/images\/Meeple_([A-Za-z]+)\.png" style="vertical-align: middle; margin: 3">/g, ':meeple_$1:');
+    action = action.replace(/<img width="27" src="modules\/GM_Nations\/images\/Meeple_([A-Za-z]+)\.png" style="vertical-align: middle; margin: 3">/g, ' :meeple_$1:');
     action = action.replace(/(?:'(.+?)') <img width="25" src="modules\/GM_Nations\/images\/Progress_Cards\/(?:.+?)\.jpg" onmouseover=".+?" style="vertical-align: middle; margin: 3">/g,
         '_$1_ ');
     action = action.replace(/[Bb]uy /, 'bought ')
