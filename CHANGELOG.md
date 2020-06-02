@@ -1,3 +1,10 @@
+### [3.1.3](https://github.com/markwoon/RefinedNations/compare/v3.1.2...v3.1.3) (2020-06-02)
+
+
+### Bug Fixes
+
+* avoid NPE ([3af32a7](https://github.com/markwoon/RefinedNations/commit/3af32a7fe171b60f3a859ce4fb48ac4eeaa8c98c))
+
 ### [3.1.2](https://github.com/markwoon/RefinedNations/compare/v3.1.1...v3.1.2) (2020-06-01)
 
 
