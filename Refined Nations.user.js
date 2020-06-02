@@ -786,7 +786,7 @@ function loadGameMenu() {
 function loadGameConfig() {
   for (let x = 1; x < 6; x++) {
     const config = getGameConfig(x);
-    if (config.id === gameId) {
+    if (config && config.id === gameId) {
       console.log('Found game config:', config);
       return config;
     }
