@@ -1,3 +1,10 @@
+### [3.1.5](https://github.com/markwoon/RefinedNations/compare/v3.1.4...v3.1.5) (2020-06-03)
+
+
+### Bug Fixes
+
+* fix regression on slack notification problem ([39e1c3f](https://github.com/markwoon/RefinedNations/commit/39e1c3f63b9bcb92d1043318e297bc8e4c99d868))
+
 ### [3.1.4](https://github.com/markwoon/RefinedNations/compare/v3.1.3...v3.1.4) (2020-06-03)
 
 
