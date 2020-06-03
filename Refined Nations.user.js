@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Refined Nations
-// @version      3.1.6
+// @version      3.1.7
 // @description  UI tweaks for MaBi Web Nations
 // @match        http://www.mabiweb.com/modules.php?name=GM_Nations*
 // @author       Mark Woon
@@ -898,6 +898,8 @@ function getSlackFancyActionText(action) {
         .replace(/<img width="27" src="modules\/GM_Nations\/images\/Token_([A-Za-z]+)\.png" style="vertical-align: middle; margin: 3">/g, ':$1:')
         .replace(/<img width="27" src="modules\/GM_Nations\/images\/Meeple_([A-Za-z]+)\.png" style="vertical-align: middle; margin: 3">/g, ' :meeple_$1:')
         .replace(/(?:'(.+?)') <img width="25" src="modules\/GM_Nations\/images\/(?:Progress|Dynasties)_Cards\/(?:.+?)\.jpg" onmouseover=".+?" style="vertical-align: middle; margin: 3">/g, '_$1_ ')
+        .replace(/(:meeple_[A-Za-z]+:) from<img width="35" src="modules\/GM_Nations\/images\/Token_([A-Za-z]+)_Worker.png" style="vertical-align: middle; margin: 3">/,
+            (text, g1, g2) => `${g2.toLowerCase()} ${g1}`)
     ;
     action = action.replace(/[Bb]uy /, 'bought ')
         .replace('deploy ', 'deployed ')
