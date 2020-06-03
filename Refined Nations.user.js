@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Refined Nations
-// @version      3.1.3
+// @version      3.1.4
 // @description  UI tweaks for MaBi Web Nations
 // @match        http://www.mabiweb.com/modules.php?name=GM_Nations*
 // @author       Mark Woon
@@ -8,6 +8,7 @@
 // @supportURL   https://github.com/markwoon/RefinedNations
 // @require      https://openuserjs.org/src/libs/sizzle/GM_config.js
 // @grant        GM_addStyle
+// @grant        GM_info
 // @grant        GM_notification
 // @grant        GM_registerMenuCommand
 // @noframes
@@ -24,12 +25,15 @@ const onSaveConfig = () => {
   window.location.href = gameUrl;
 }
 
+const title = document.createElement('div')
+title.innerHTML = 'Refined Nations Config<div style="font-size: 9pt; background-color: #EFEFEF;">Mouse over field names for help.</div>';
+
 /**
  * Initialize config.
  */
 GM_config.init({
   id: 'RefinedNationsConfig',
-  title: 'Refined Nations Config',
+  title: title,
   fields: {
     hideChrome: {
       section: 'UI',
@@ -37,6 +41,7 @@ GM_config.init({
       labelPos: 'left',
       type: 'checkbox',
       default: true,
+      title: 'Hides the MaBi Web UI and as much unnecessary UI as possible.'
     },
     hideHeader: {
       label: 'Hide Game Header',
@@ -60,6 +65,7 @@ GM_config.init({
       labelPos: 'left',
       type: 'checkbox',
       default: false,
+      title: 'If enabled, page will auto-reload and notify you when it is your turn.'
     },
     reloadInterval: {
       label: 'Interval (minutes)',
@@ -67,7 +73,7 @@ GM_config.init({
       type: 'unsigned int',
       size: 2,
       default: 5,
-      title: 'Interval between reloads',
+      title: 'The interval between reloads.',
     },
 
     showAllBoards: {
@@ -76,6 +82,7 @@ GM_config.init({
       labelPos: 'left',
       type: 'checkbox',
       default: true,
+      title: 'If enabled, this will show all player boards on the same page.'
     },
     showBoardsInPlayerOrder: {
       label: 'Show My Board In Player Order',
@@ -125,7 +132,10 @@ GM_config.init({
     game1Id: {
       section: [
         'Games',
-        'This section facilitates playing multiple games at a time.'
+        'This section facilitates playing multiple games at a time.  ' +
+        'Listing your games here will allow you to switch between them in the game header.  ' +
+        'Adding a Slack Incoming Webhook for a game will post notifications to that channel when ' +
+        'you have completed your move.'
       ],
       label: 'Game 1',
       labelPos: 'left',
@@ -138,7 +148,7 @@ GM_config.init({
       type: 'text',
       default: '',
       size: 40,
-      title: 'The Slack Webhook URL to post to whenever you complete your move',
+      title: 'Slack Webhook URL to post to whenever you complete your move in Game 1.',
     },
     //
     game2Id: {
@@ -153,7 +163,7 @@ GM_config.init({
       type: 'text',
       default: '',
       size: 40,
-      title: 'The Slack Webhook URL to post to whenever you complete your move',
+      title: 'The Slack Webhook URL to post to whenever you complete your move in Game 2.',
     },
     //
     game3Id: {
@@ -168,7 +178,7 @@ GM_config.init({
       type: 'text',
       default: '',
       size: 40,
-      title: 'The Slack Webhook URL to post to whenever you complete your move',
+      title: 'The Slack Webhook URL to post to whenever you complete your move in Game 3.',
     },
     //
     game4Id: {
@@ -183,7 +193,7 @@ GM_config.init({
       type: 'text',
       default: '',
       size: 40,
-      title: 'The Slack Webhook URL to post to whenever you complete your move',
+      title: 'The Slack Webhook URL to post to whenever you complete your move in Game 4.',
     },
     //
     game5Id: {
@@ -198,7 +208,7 @@ GM_config.init({
       type: 'text',
       default: '',
       size: 40,
-      title: 'The Slack Webhook URL to post to whenever you complete your move',
+      title: 'The Slack Webhook URL to post to whenever you complete your move in Game 5.',
     },
 
     slackDisplayName: {
@@ -210,19 +220,19 @@ GM_config.init({
       labelPos: 'left',
       type: 'string',
       default: '',
-      title: 'The name to use when announcing your move.  Defaults to Mabi Web user ID if not specified.'
+      title: 'The name to use when announcing your move.  Defaults to MaBi Web user ID if not specified.'
     },
     slackDescriptiveMove: {
-      label: 'Descriptive Moves',
+      label: 'Descriptive Notifications',
       type: 'checkbox',
-      default: false,
-      title: 'Detail move in message'
+      default: true,
+      title: 'Sends descriptive notifications instead of generic "moved"/"passed".'
     },
     slackEmojis: {
       label: 'Use Emojis',
       type: 'checkbox',
       default: false,
-      title: 'Use emojis.  Requires Nations emojis to be installed.'
+      title: 'If using descriptive notifications, this will enable the use of emojis.  Requires Nations emojis to be installed.'
     },
 
   },
@@ -320,7 +330,7 @@ console.log('Reload URL:', gameUrl);
 
 // add game id to footer
 const footer = document.getElementById('nations-gamefooter');
-footer.innerHTML = footer.innerHTML + `<br><br>GAME ID:${gameId}`;
+footer.innerHTML = footer.innerHTML + `<br><br>GAME ID:${gameId}<br /><br />Refined Nations v${GM_info.script.version}`;
 
 
 if (GM_config.get('hideHeader')) {
@@ -544,6 +554,7 @@ if (tracksTable) {
           }
         }
       }
+      console.log('Will send Slack notification when ending turn')
     }
 
   } else {
@@ -768,7 +779,7 @@ function loadGameMenu() {
       option.value = `http://www.mabiweb.com/modules.php?name=GM_Nations&g_id=${config.id}&op=view_game_reset`;
       option.text = config.name ? config.name : `Game ${config.id}`;
       if (config.id === gameId) {
-        option.selected = 'selected';
+        option.selected = true;
       }
       select.appendChild(option);
     }
@@ -882,11 +893,12 @@ function getSlackFancyActionText(action) {
   action = action.substring(idx + username.length + 2, action.length);
 
   if (action !== 'pass') {
-    action = action.replace(/<img width="27" src="modules\/GM_Nations\/images\/(?:Token_)?Heritage\.png" style="vertical-align: middle; margin: 3">/g, ':nations_book:');
-    action = action.replace(/<img width="27" src="modules\/GM_Nations\/images\/Token_([A-Za-z]+)\.png" style="vertical-align: middle; margin: 3">/g, ':$1:');
-    action = action.replace(/<img width="27" src="modules\/GM_Nations\/images\/Meeple_([A-Za-z]+)\.png" style="vertical-align: middle; margin: 3">/g, ' :meeple_$1:');
-    action = action.replace(/(?:'(.+?)') <img width="25" src="modules\/GM_Nations\/images\/Progress_Cards\/(?:.+?)\.jpg" onmouseover=".+?" style="vertical-align: middle; margin: 3">/g,
-        '_$1_ ');
+    action = action
+        .replace(/<img width="27" src="modules\/GM_Nations\/images\/(?:Token_)?Heritage\.png" style="vertical-align: middle; margin: 3">/g, ':nations_book:')
+        .replace(/<img width="27" src="modules\/GM_Nations\/images\/Token_([A-Za-z]+)\.png" style="vertical-align: middle; margin: 3">/g, ':$1:')
+        .replace(/<img width="27" src="modules\/GM_Nations\/images\/Meeple_([A-Za-z]+)\.png" style="vertical-align: middle; margin: 3">/g, ' :meeple_$1:')
+        .replace(/(?:'(.+?)') <img width="25" src="modules\/GM_Nations\/images\/(?:Progress|Dynasties)_Cards\//g, '_$1_ ')
+    ;
     action = action.replace(/[Bb]uy /, 'bought ')
         .replace('deploy ', 'deployed ')
         .replace('hire ', 'hired ')
@@ -896,7 +908,14 @@ function getSlackFancyActionText(action) {
         .replace(/take /g, 'took ')
         .replace(', took ', 'and took ')
         .replace('may took', 'may take')
-        .replace(/ +/g, ' ')
+        // collapse sequential whitespace to a single space
+        .replace(/\s+/g, ' ')
+        // consistent spacing between number and emoji
+        .replace(/\d:/g, ' ')
+        // consistent spacing after close parentheses
+        .replace(/\)[^\s,.]/g, ') ')
+        // remove space before commas
+        .replace(/\s,/g, ',')
     ;
 
     if (!GM_config.get('slackEmojis')) {
