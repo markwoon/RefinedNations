@@ -1,3 +1,10 @@
+### [3.1.7](https://github.com/markwoon/RefinedNations/compare/v3.1.6...v3.1.7) (2020-06-03)
+
+
+### Bug Fixes
+
+* fix slack notification when taking workers ([33815a6](https://github.com/markwoon/RefinedNations/commit/33815a68299452066928757234fcdbc1a20ab84e))
+
 ### [3.1.6](https://github.com/markwoon/RefinedNations/compare/v3.1.5...v3.1.6) (2020-06-03)
 
 
