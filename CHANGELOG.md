@@ -1,3 +1,10 @@
+### [3.1.8](https://github.com/markwoon/RefinedNations/compare/v3.1.7...v3.1.8) (2020-06-08)
+
+
+### Bug Fixes
+
+* fix player disc in Slack notifications ([eb1bd1e](https://github.com/markwoon/RefinedNations/commit/eb1bd1e03ce8c1b59be2983f7dd3892db1c89b7d))
+
 ### [3.1.7](https://github.com/markwoon/RefinedNations/compare/v3.1.6...v3.1.7) (2020-06-03)
 
 
