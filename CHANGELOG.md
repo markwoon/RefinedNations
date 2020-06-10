@@ -1,3 +1,10 @@
+### [3.1.9](https://github.com/markwoon/RefinedNations/compare/v3.1.8...v3.1.9) (2020-06-10)
+
+
+### Bug Fixes
+
+* simple Slack notification reporting incorrect gold amount ([d3775c0](https://github.com/markwoon/RefinedNations/commit/d3775c096550ad597f94bc576d7989b5b96c6baa))
+
 ### [3.1.8](https://github.com/markwoon/RefinedNations/compare/v3.1.7...v3.1.8) (2020-06-08)
 
 
