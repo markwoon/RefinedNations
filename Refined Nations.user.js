@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Refined Nations
-// @version      3.1.8
+// @version      3.1.9
 // @description  UI tweaks for MaBi Web Nations
 // @match        http://www.mabiweb.com/modules.php?name=GM_Nations*
 // @author       Mark Woon
@@ -924,7 +924,9 @@ function getSlackFancyActionText(action) {
     if (!GM_config.get('slackEmojis')) {
       action = action
           .replace(/:meeple_[A-Za-z]+?:/, ' worker')
-          .replace(/([0-9]+) ?:gold:/i, '$$1')
+          .replace(/([0-9]+) ?:gold:/i, (text, g1) => {
+            return `$${g1}`;
+          })
           .replace(/([0-9]+) ?:([A-Za-z_]+):/i, (text, g1, g2) => {
             let noun = g2.toLowerCase();
             if (noun === 'nations_book') {
