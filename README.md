@@ -1,6 +1,6 @@
 # RefinedNations
 
-[![GreasyFork](https://img.shields.io/badge/GreasyFork-3.1.9-green)](https://greasyfork.org/en/scripts/403128-refined-nations)
+[![GreasyFork](https://img.shields.io/badge/GreasyFork-3.2.0-green)](https://greasyfork.org/en/scripts/403128-refined-nations)
 
 This is a userscript for Nations on MaBi Web.
 
@@ -59,6 +59,20 @@ Example:
 One you've added that, you'll see your games show up in the header:
 
 <img src="images/game_menu.png" alt="Game menu in header" width="600" />
+
+
+#### Importing from the Game Manager
+
+As of v3.2.0, Refined Nations can import your games from the Game Manager.
+
+Use the `Import into Refined Nations` button on the top left:
+
+<img src="images/import_games.png" alt="Game ID in footer" width="600" />
+
+This will both:
+
+* delete completed games from your config (a game is "completed" if it can't be found in your running games list)
+* add new games to open spots in your config (a game is "new" if it can't be found in your config)
 
 
 

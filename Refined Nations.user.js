@@ -1,7 +1,8 @@
 // ==UserScript==
 // @name         Refined Nations
-// @version      3.1.9
+// @version      3.2.0
 // @description  UI tweaks for MaBi Web Nations
+// @match        http://www.mabiweb.com/modules.php?name=Game_Manager
 // @match        http://www.mabiweb.com/modules.php?name=GM_Nations*
 // @author       Mark Woon
 // @namespace    https://github.com/markwoon/
@@ -270,6 +271,108 @@ GM_registerMenuCommand('Refined Nations Settings', () => {
 });
 
 
+function findIndex(array, matcher) {
+  for (let x = 0; x < array.length; x += 1) {
+    if (matcher(array[x])) {
+      return x;
+    }
+  }
+  return -1;
+}
+
+
+//---------- BEGIN GAMES MANAGER CODE ----------//
+
+/**
+ * Imports game from Games Manager into config.
+ */
+const importGameConfig = () => {
+  console.log('Importing games from game manager');
+  const gamesTable = document.querySelector('#gamemanager-gamelists > table > tbody');
+  if (!gamesTable) {
+    console.log('No games!');
+    return;
+  }
+  const configs = [];
+  for (let x = 1; x < 6; x++) {
+    const config = getGameConfig(x);
+    if (config) {
+      configs.push(config);
+    }
+  }
+
+  const games = [];
+  for (let x = 1; x < gamesTable.children.length; x += 1) {
+    const tr = gamesTable.children[x];
+    if (tr.children[6].innerHTML.match('GM_Nations')) {
+      const id = tr.children[0].innerHTML;
+      const cfgIdx = findIndex(configs, (cfg) => cfg.id === id);
+      if (cfgIdx !== -1) {
+        configs.splice(cfgIdx, 1);
+      } else {
+        games.push({
+          id,
+          name: tr.children[2].innerHTML.substring(0, tr.children[2].innerHTML.indexOf('<br')),
+        });
+      }
+    }
+  }
+
+  if (configs.length > 0) {
+    console.log('Completed games', configs);
+    for (let configNum = 1; configNum < 6; configNum += 1) {
+      const config = getGameConfig(configNum);
+      if (config) {
+        // remove config for completed game
+        for (let x = 0; x < configs.length; x += 1) {
+          if (config.id === configs[x].id) {
+            GM_config.set(`game${configNum}Id`, '');
+            GM_config.set(`game${configNum}Slack`, '');
+            break;
+          }
+        }
+      }
+    }
+  }
+  if (games.length > 0) {
+    console.log('New games', games);
+    for (let x = 0; x < games.length; x += 1) {
+      let added = false;
+      // find an empty spot to add game
+      for (let configNum = 1; configNum < 6; configNum += 1) {
+        const config = getGameConfig(configNum);
+        if (!config || !config.id) {
+          console.log(`Adding ${games[x].name} as Game ${configNum}`);
+          GM_config.set(`game${configNum}Id`, `${games[x].id}:${games[x].name}`);
+          added = true;
+          break;
+        }
+      }
+      if (!added) {
+        console.log(`Not enough slots to add all games.  Only added ${x} out of ${games.length} new games.`);
+        break;
+      }
+    }
+  }
+}
+
+if (window.location.href === 'http://www.mabiweb.com/modules.php?name=Game_Manager') {
+  console.log('In Game Manager');
+  const runningGames = document.querySelector('#gamemanager-gamelists > div');
+  if (runningGames) {
+    const importBtn = document.createElement('button');
+    importBtn.innerHTML = 'Import into Refined Nations';
+    importBtn.onclick = importGameConfig;
+    importBtn.style.float = 'right';
+    importBtn.style.margin = '0 5px 4px 0';
+    importBtn.style.display = 'inline';
+    runningGames.appendChild(importBtn);
+  }
+  return;
+}
+
+//---------- END GAMES MANAGER CODE ----------//
+
 
 if (GM_config.get('hideChrome')) {
   console.log('hiding extraneous padding');
@@ -281,16 +384,16 @@ body > table:first-of-type {
 body > table:nth-of-type(3) {
   display: none;
 }
-body > table:nth-of-type(4) > tbody> tr:first-of-type > td:nth-of-type(1) {
+body > table:nth-of-type(4) > tbody > tr:first-of-type > td:nth-of-type(1) {
   display: none;
 }
-body > table:nth-of-type(4) > tbody> tr:first-of-type > td:nth-of-type(2) {
+body > table:nth-of-type(4) > tbody > tr:first-of-type > td:nth-of-type(2) {
   display: none;
 }
-body > table:nth-of-type(4) > tbody> tr:first-of-type > td:nth-of-type(3) {
+body > table:nth-of-type(4) > tbody > tr:first-of-type > td:nth-of-type(3) {
   display: none;
 }
-body > table:nth-of-type(4) > tbody> tr:first-of-type > td:nth-of-type(5) {
+body > table:nth-of-type(4) > tbody > tr:first-of-type > td:nth-of-type(5) {
   display: none;
 }
 #nations-game > hr {
