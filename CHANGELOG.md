@@ -1,3 +1,10 @@
+### [3.2.1](https://github.com/markwoon/RefinedNations/compare/v3.2.0...v3.2.1) (2020-06-12)
+
+
+### Bug Fixes
+
+* fix config not saving after importing ([a85051f](https://github.com/markwoon/RefinedNations/commit/a85051fe10249913a9503e40f8257e2342e95bff))
+
 ## [3.2.0](https://github.com/markwoon/RefinedNations/compare/v3.1.9...v3.2.0) (2020-06-12)
 
 
