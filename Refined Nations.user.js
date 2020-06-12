@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Refined Nations
-// @version      3.2.0
+// @version      3.2.1
 // @description  UI tweaks for MaBi Web Nations
 // @match        http://www.mabiweb.com/modules.php?name=Game_Manager
 // @match        http://www.mabiweb.com/modules.php?name=GM_Nations*
@@ -18,12 +18,33 @@
 /* global GM_config, RefinedNationsConfig */
 'use strict';
 
+let isConfigOpen = false;
+let gameUrl;
+
+
 /**
- * GM_config save callback to close settings panel and reload page to apply changes.
+ * GM_config open callback.
+ */
+const onOpenConfig = () => {
+  isConfigOpen = true;
+}
+/**
+ * GM_config save callback.  Closes settings panel and reloads page to apply changes.
  */
 const onSaveConfig = () => {
-  GM_config.close();
-  window.location.href = gameUrl;
+  if (isConfigOpen) {
+    GM_config.close();
+    if (gameUrl) {
+      // gameUrl is only defined if on game page and logged in
+      window.location.href = gameUrl;
+    }
+  }
+}
+/**
+ * GM_config close callback.
+ */
+const onCloseConfig = () => {
+  isConfigOpen = false;
 }
 
 const title = document.createElement('div')
@@ -238,7 +259,9 @@ GM_config.init({
 
   },
   events: {
+    open: onOpenConfig,
     save: onSaveConfig,
+    close: onCloseConfig,
   },
   css: `
 #RefinedNationsConfig_header.config_header.center {
@@ -318,6 +341,7 @@ const importGameConfig = () => {
     }
   }
 
+  let updated = false;
   if (configs.length > 0) {
     console.log('Completed games', configs);
     for (let configNum = 1; configNum < 6; configNum += 1) {
@@ -328,6 +352,7 @@ const importGameConfig = () => {
           if (config.id === configs[x].id) {
             GM_config.set(`game${configNum}Id`, '');
             GM_config.set(`game${configNum}Slack`, '');
+            updated = true;
             break;
           }
         }
@@ -344,6 +369,7 @@ const importGameConfig = () => {
         if (!config || !config.id) {
           console.log(`Adding ${games[x].name} as Game ${configNum}`);
           GM_config.set(`game${configNum}Id`, `${games[x].id}:${games[x].name}`);
+          updated = true;
           added = true;
           break;
         }
@@ -353,6 +379,10 @@ const importGameConfig = () => {
         break;
       }
     }
+  }
+  if (updated) {
+    console.log('Saving config');
+    GM_config.save();
   }
 }
 
@@ -428,7 +458,7 @@ if (!urlMatch) {
 }
 const gameId = urlMatch[1];
 console.log('Game ID:', gameId);
-const gameUrl = `http://www.mabiweb.com/modules.php?name=GM_Nations&g_id=${gameId}&op=view_game_reset`;
+gameUrl = `http://www.mabiweb.com/modules.php?name=GM_Nations&g_id=${gameId}&op=view_game_reset`;
 console.log('Reload URL:', gameUrl);
 
 // add game id to footer
@@ -804,33 +834,35 @@ function addProductionTable(playerId, playerNode) {
 
   console.log('Adding production results for ', playerId);
   let resources = document.querySelector('#' + playerId + ' img:last-of-type');
-  if (!resources.onmouseover) {
-    resources = playerNode.children[playerNode.children.length - 2];
-  }
-  if (resources.onmouseover) {
-    const mouseOver = resources.getAttribute('onmouseover');
-    const match = mouseOver.match(/(<TABLE.*<\/TABLE>)/m);
-    if (match) {
-      let productionTable = match[1];
-      // strip out style because it's using JS escapes
-      productionTable = productionTable.replace(/style=\\'.*?\\'/mg, '');
-      productionTable = productionTable.replace(/<TD><IMG/mg, '<TD style="font-size: 14pt; vertical-align: top;"><IMG style="position: relative; height: 30px;"');
-      productionTable = productionTable.replace(/width="30"/mg, '');
-      productionTable = productionTable.replace(/\(/, '<br /><span style="font-size: 0.8em">(');
-      productionTable = productionTable.replace(/\)/, ')</font>');
+  if (resources) {
+    if (!resources.onmouseover) {
+      resources = playerNode.children[playerNode.children.length - 2];
+    }
+    if (resources.onmouseover) {
+      const mouseOver = resources.getAttribute('onmouseover');
+      const match = mouseOver.match(/(<TABLE.*<\/TABLE>)/m);
+      if (match) {
+        let productionTable = match[1];
+        // strip out style because it's using JS escapes
+        productionTable = productionTable.replace(/style=\\'.*?\\'/mg, '');
+        productionTable = productionTable.replace(/<TD><IMG/mg, '<TD style="font-size: 14pt; vertical-align: top;"><IMG style="position: relative; height: 30px;"');
+        productionTable = productionTable.replace(/width="30"/mg, '');
+        productionTable = productionTable.replace(/\(/, '<br /><span style="font-size: 0.8em">(');
+        productionTable = productionTable.replace(/\)/, ')</font>');
 
-      const div = document.createElement('div');
-      div.innerHTML = productionTable;
-      div.style.position = 'absolute';
-      div.style.top = '3em';
-      div.style.left = '1070px';
-      div.style.background = '#fff';
+        const div = document.createElement('div');
+        div.innerHTML = productionTable;
+        div.style.position = 'absolute';
+        div.style.top = '3em';
+        div.style.left = '1070px';
+        div.style.background = '#fff';
 
-      const table = div.children[0];
-      table.style['text-align'] = 'center';
+        const table = div.children[0];
+        table.style['text-align'] = 'center';
 
-      playerNode.appendChild(div);
-      console.log('...added');
+        playerNode.appendChild(div);
+        console.log('...added');
+      }
     }
   }
   if (playerId === username) {
