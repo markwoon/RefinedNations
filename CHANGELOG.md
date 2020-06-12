@@ -1,3 +1,10 @@
+## [3.2.0](https://github.com/markwoon/RefinedNations/compare/v3.1.9...v3.2.0) (2020-06-12)
+
+
+### Features
+
+* support importing games from Games Manager ([db8d9ba](https://github.com/markwoon/RefinedNations/commit/db8d9ba4d883519b3f7f5fed05cd2ba2514b0bc7))
+
 ### [3.1.9](https://github.com/markwoon/RefinedNations/compare/v3.1.8...v3.1.9) (2020-06-10)
 
 
