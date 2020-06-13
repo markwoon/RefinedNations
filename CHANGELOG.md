@@ -1,3 +1,10 @@
+### [3.3.1](https://github.com/markwoon/RefinedNations/compare/v3.3.0...v3.3.1) (2020-06-13)
+
+
+### Bug Fixes
+
+* notify user of result of import ([7ad7cea](https://github.com/markwoon/RefinedNations/commit/7ad7cead471ac4e068a10feac861f8fb748359b6))
+
 ## [3.3.0](https://github.com/markwoon/RefinedNations/compare/v3.2.2...v3.3.0) (2020-06-13)
 
 
