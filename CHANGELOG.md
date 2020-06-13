@@ -1,3 +1,10 @@
+## [3.3.0](https://github.com/markwoon/RefinedNations/compare/v3.2.2...v3.3.0) (2020-06-13)
+
+
+### Features
+
+* change favicon when it's player's turn ([808e85c](https://github.com/markwoon/RefinedNations/commit/808e85c18061bc16b94ff160d33f828ce0d4dd9c))
+
 ### [3.2.2](https://github.com/markwoon/RefinedNations/compare/v3.2.1...v3.2.2) (2020-06-13)
 
 
