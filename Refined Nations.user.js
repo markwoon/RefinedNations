@@ -1,12 +1,13 @@
 // ==UserScript==
 // @name         Refined Nations
-// @version      3.2.2
+// @version      3.3.0
 // @description  UI tweaks for MaBi Web Nations
 // @match        http://www.mabiweb.com/modules.php?name=Game_Manager
 // @match        http://www.mabiweb.com/modules.php?name=GM_Nations*
 // @author       Mark Woon
 // @namespace    https://github.com/markwoon/
 // @supportURL   https://github.com/markwoon/RefinedNations
+// @icon         https://raw.githubusercontent.com/markwoon/RefinedNations/b14a0e06e8f585a451d6d99e40a08a6f04b43398/images/marie_curie.png
 // @require      https://openuserjs.org/src/libs/sizzle/GM_config.js
 // @grant        GM_addStyle
 // @grant        GM_info
@@ -534,12 +535,14 @@ console.log('Player levels:', playerLevels);
 // determine board order
 const players = [];
 const userIsPlaying = playerOrder.includes(username);
+const isUserTurn = currentPlayer === username;
 if (userIsPlaying) {
   console.log('Player is in this game!');
   if (!GM_config.get('showBoardsInPlayerOrder')) {
     console.log('Making player\'s board first');
     players.push(username);
   }
+  updateFavIcon();
 }
 for (let x = 1; x < 7; x++) {
   const pid = GM_config.get(`player${x}`);
@@ -1093,4 +1096,22 @@ function getSlackGameLink() {
     return `in <${gameUrl}|${gameConfig.name}>`;
   }
   return `in <${gameUrl}|game ${gameId}>`;
+}
+
+/**
+ * Updates the favicon.
+ */
+function updateFavIcon() {
+  console.log('Updating favicon');
+  try {
+    let link = document.createElement('link');
+    link.rel = 'shortcut icon';
+    link.type = 'image/png';
+    link.href = isUserTurn
+        ? 'https://raw.githubusercontent.com/markwoon/RefinedNations/b14a0e06e8f585a451d6d99e40a08a6f04b43398/images/marie_curie.png'
+        : 'http://www.mabiweb.com/favicon.ico';
+    document.getElementsByTagName('head')[0].appendChild(link);
+  } catch (error) {
+    console.error('Error updating favicon', error);
+  }
 }
