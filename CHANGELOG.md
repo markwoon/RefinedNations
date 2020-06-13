@@ -1,3 +1,10 @@
+### [3.2.2](https://github.com/markwoon/RefinedNations/compare/v3.2.1...v3.2.2) (2020-06-13)
+
+
+### Bug Fixes
+
+* fix Slack notification for Victoria Falls ([7b83fe7](https://github.com/markwoon/RefinedNations/commit/7b83fe7032365befd6c6b7042df86de4f26813f1))
+
 ### [3.2.1](https://github.com/markwoon/RefinedNations/compare/v3.2.0...v3.2.1) (2020-06-12)
 
 
