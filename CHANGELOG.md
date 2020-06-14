@@ -1,3 +1,10 @@
+### [3.3.3](https://github.com/markwoon/RefinedNations/compare/v3.3.2...v3.3.3) (2020-06-14)
+
+
+### Bug Fixes
+
+* improve game selector ([fce7e6d](https://github.com/markwoon/RefinedNations/commit/fce7e6dc92f6657679d06d332efcf7c819f79465))
+
 ### [3.3.2](https://github.com/markwoon/RefinedNations/compare/v3.3.1...v3.3.2) (2020-06-14)
 
 
