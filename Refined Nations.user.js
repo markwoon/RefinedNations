@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Refined Nations
-// @version      3.3.1
+// @version      3.3.2
 // @description  UI tweaks for MaBi Web Nations
 // @match        http://www.mabiweb.com/modules.php?name=Game_Manager
 // @match        http://www.mabiweb.com/modules.php?name=GM_Nations*
@@ -1041,9 +1041,9 @@ function getSlackFancyActionText(action) {
         .replace(/<img width="27" src="modules\/GM_Nations\/images\/Token_([A-Za-z]+)\.png" style="vertical-align: middle; margin: 3">/g, ':$1:')
         .replace(/<img width="27" src="modules\/GM_Nations\/images\/Meeple_([A-Za-z]+)\.png" style="vertical-align: middle; margin: 3">/g, ' :meeple_$1:')
         .replace(/(?:'(.+?)') <img width="25" src="modules\/GM_Nations\/images\/(?:Progress|Dynasties)_Cards\/(?:.+?)\.jpg" onmouseover=".+?" style="vertical-align: middle; margin: 3">/g, '_$1_ ')
-        .replace(/(:meeple_[A-Za-z]+:) from<img width="35" src="modules\/GM_Nations\/images\/Token_([A-Za-z]+)_Worker.png" style="vertical-align: middle; margin: 3">/,
+        .replace(/(:meeple_[A-Za-z]+:) from<img width="35" src="modules\/GM_Nations\/images\/Token_([A-Za-z]+)_Worker.png" style="vertical-align: middle; margin: 3">/g,
             (text, g1, g2) => `${g2.toLowerCase()} ${g1}`)
-        .replace(/<img width="27" src="modules\/GM_Nations\/images\/Disc_([A-Za-z]+)\.png" style="vertical-align: middle; margin: 3">/, '')
+        .replace(/<img width="27" src="modules\/GM_Nations\/images\/Disc_([A-Za-z]+)\.png" style="vertical-align: middle; margin: 3">/g, '')
         // deal with Victoria Falls
         .replace(/<img width="25" src="modules\/GM_Nations\/images\/(?:Progress|Dynasties)_Cards\/([A-Za-z\-_]+)\.jpg" onmouseover=".+?" style="vertical-align: middle; margin: 3">/g, '_$1_')
         .replace(/&nbsp;/g, ' ')
@@ -1062,6 +1062,8 @@ function getSlackFancyActionText(action) {
         .replace(/\s+/g, ' ')
         // consistent spacing between number and emoji
         .replace(/(\d):/g, '$1 :')
+        // consistent spacing after open parentheses
+        .replace(/\( /g, '(')
         // consistent spacing after close parentheses
         .replace(/\)[^\s,.]/g, ') ')
         // remove space before commas
@@ -1080,6 +1082,8 @@ function getSlackFancyActionText(action) {
               noun = 'book';
             } else if (noun === 'vp') {
               noun = 'VP';
+            } else if (noun === 'food') {
+              return `${g1} ${noun}`;
             }
             if (g1 > 1) {
               return `${g1} ${noun}s`;
