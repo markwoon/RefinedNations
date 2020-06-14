@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Refined Nations
-// @version      3.3.2
+// @version      3.3.3
 // @description  UI tweaks for MaBi Web Nations
 // @match        http://www.mabiweb.com/modules.php?name=Game_Manager
 // @match        http://www.mabiweb.com/modules.php?name=GM_Nations*
@@ -916,6 +916,10 @@ function loadGameMenu() {
   }
   if (configs.length > 0) {
     const select = document.createElement('select')
+    const emptyOption = document.createElement('option');
+    emptyOption.target = '';
+    emptyOption.text = 'pick a game to switch to';
+    select.appendChild(emptyOption);
     for (let x = 0; x < configs.length; x++) {
       const config = configs[x];
       const option = document.createElement('option');
@@ -927,7 +931,9 @@ function loadGameMenu() {
       select.appendChild(option);
     }
     select.onchange = (evt) => {
-      window.location.href = evt.target.value;
+      if (evt.target.value && evt.target.value !== window.location.href) {
+        window.location.href = evt.target.value;
+      }
     };
     return select;
   }
