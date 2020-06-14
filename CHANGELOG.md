@@ -1,3 +1,10 @@
+### [3.3.2](https://github.com/markwoon/RefinedNations/compare/v3.3.1...v3.3.2) (2020-06-14)
+
+
+### Bug Fixes
+
+* improve Slack notifications ([53c2d69](https://github.com/markwoon/RefinedNations/commit/53c2d69aceafd8a9c9ca0f188dd45f25c5690703))
+
 ### [3.3.1](https://github.com/markwoon/RefinedNations/compare/v3.3.0...v3.3.1) (2020-06-13)
 
 
