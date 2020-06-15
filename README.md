@@ -1,6 +1,6 @@
 # RefinedNations
 
-[![GreasyFork](https://img.shields.io/badge/GreasyFork-3.3.3-green)](https://greasyfork.org/en/scripts/403128-refined-nations)
+[![GreasyFork](https://img.shields.io/badge/GreasyFork-3.3.4-green)](https://greasyfork.org/en/scripts/403128-refined-nations)
 
 This is a userscript for Nations on MaBi Web.
 

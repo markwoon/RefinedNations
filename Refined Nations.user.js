@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Refined Nations
-// @version      3.3.3
+// @version      3.3.4
 // @description  UI tweaks for MaBi Web Nations
 // @match        http://www.mabiweb.com/modules.php?name=Game_Manager
 // @match        http://www.mabiweb.com/modules.php?name=GM_Nations*
@@ -310,11 +310,21 @@ function findIndex(array, matcher) {
 /**
  * Imports game from Games Manager into config.
  */
-const importGameConfig = () => {
+const importGameConfig = (event) => {
   console.log('Importing games from game manager');
-  const gamesTable = document.querySelector('#gamemanager-gamelists > table > tbody');
+  let listIndex = parseInt(event.target['data-listIndex'], 10);
+  if (isNaN(listIndex)) {
+    console.error('Missing data-listIndex property!');
+  }
+
+  const gamesTables = document.querySelectorAll('#gamemanager-gamelists > table > tbody');
+  if (!gamesTables) {
+    console.log('No games tables?!?');
+    return;
+  }
+  const gamesTable = gamesTables[listIndex];
   if (!gamesTable) {
-    console.log('No games!');
+    console.log('No games table??');
     return;
   }
   const configs = [];
@@ -394,16 +404,25 @@ const importGameConfig = () => {
 
 if (window.location.href === 'http://www.mabiweb.com/modules.php?name=Game_Manager') {
   console.log('In Game Manager');
-  const runningGames = document.querySelector('#gamemanager-gamelists > div');
-  if (runningGames) {
-    const importBtn = document.createElement('button');
-    importBtn.innerHTML = 'Import into Refined Nations';
-    importBtn.onclick = importGameConfig;
-    importBtn.style.float = 'right';
-    importBtn.style.margin = '0 5px 4px 0';
-    importBtn.style.display = 'inline';
-    runningGames.appendChild(importBtn);
+  const gameLists = document.querySelectorAll('#gamemanager-gamelists > div');
+  if (gameLists) {
+    for (let x = 0; x < gameLists.length; x += 1) {
+      console.log(gameLists[x]);
+      if (gameLists[x].innerHTML.indexOf('Your running games') !== -1) {
+        // add import button
+        const importBtn = document.createElement('button');
+        importBtn.innerHTML = 'Import into Refined Nations';
+        importBtn['data-listIndex'] = x;
+        importBtn.onclick = importGameConfig;
+        importBtn.style.float = 'right';
+        importBtn.style.margin = '0 5px 4px 0';
+        importBtn.style.display = 'inline';
+        gameLists[x].appendChild(importBtn);
+        break;
+      }
+    }
   }
+  // noinspection JSAnnotator
   return;
 }
 
@@ -917,8 +936,8 @@ function loadGameMenu() {
   if (configs.length > 0) {
     const select = document.createElement('select')
     const emptyOption = document.createElement('option');
-    emptyOption.target = '';
-    emptyOption.text = 'pick a game to switch to';
+    emptyOption.value = '';
+    emptyOption.text = 'pick one to switch to it';
     select.appendChild(emptyOption);
     for (let x = 0; x < configs.length; x++) {
       const config = configs[x];
