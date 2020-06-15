@@ -1,3 +1,10 @@
+### [3.3.4](https://github.com/markwoon/RefinedNations/compare/v3.3.3...v3.3.4) (2020-06-15)
+
+
+### Bug Fixes
+
+* import button should only appear on current games table ([26142df](https://github.com/markwoon/RefinedNations/commit/26142df099db82043d7ca3d77c29be52b9bbb38e))
+
 ### [3.3.3](https://github.com/markwoon/RefinedNations/compare/v3.3.2...v3.3.3) (2020-06-14)
 
 
