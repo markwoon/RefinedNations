@@ -320,14 +320,36 @@ let currentPlayer = playerString.match(/<b>(.+?)<\/b>/m)[1];
 console.log('Current player is', currentPlayer);
 
 // get player order and levels
-// player level will be empty in games where difficulty is set for everyone
+const difficultyMatch =
+    header.innerHTML.match(/level\s+<b>(Chieftain|Prince|King|Emperor)<\/b>/m);
+let difficulty = '';
+if (difficultyMatch) {
+  switch (difficultyMatch[1]) {
+    case 'Chieftain':
+      difficulty = '(lv. 4)';
+      break;
+    case 'Prince':
+      difficulty = '(lv. 3)';
+      break;
+    case 'King':
+      difficulty = '(lv. 2)';
+      break;
+    case 'Emperor':
+      difficulty = '(lv. 1)';
+      break;
+  }
+}
 const playerOrder = [];
 const playerLevels = {};
 const playerInfoRegex = />(\w+)(?:<\/b>)?( \(lv\. [1-4]\))?&nbsp;/gm
 let rez;
 while ((rez = playerInfoRegex.exec(playerString))) {
   playerOrder.push(rez[1]);
-  playerLevels[rez[1]] = rez[2];
+  if (rez[2]) {
+    playerLevels[rez[1]] = rez[2];
+  } else {
+    playerLevels[rez[1]] = difficulty;
+  }
 }
 console.log('Player order:', playerOrder);
 console.log('Player levels:', playerLevels);
