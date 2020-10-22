@@ -648,34 +648,58 @@ if (tracksTable) {
   const justice = tracksTable.children[0].children[0];
   const military = tracksTable.children[2].children[0];
   const science = tracksTable.children[4].children[0];
+  let extraActions = document.createElement('table');
+  let gotExtraActions = false;
   let passTurn;
   if (tracksTable.children.length > 5) {
-    passTurn = tracksTable.children[5].children[0];
+    for (let x = 5; x < tracksTable.children.length; x += 1) {
+      const cellValue = tracksTable.children[x].children[0];
+      if (cellValue.innerHTML.indexOf('Pass Turn') !== -1) {
+        passTurn = cellValue;
+      } else if (cellValue.innerHTML.indexOf('buy') === 0) {
+        if (x + 1 < tracksTable.children.length && tracksTable.children[x + 1].children[0].innerHTML.indexOf('Buy-Advisor') !== -1) {
+          x += 1;
+          const linkCellValue = tracksTable.children[x].children[0];
+          const tr = document.createElement('tr');
+          tr.innerHTML = '<td style="text-align: center; padding-left: 1.5em">' + cellValue + '</td><td>' + linkCellValue + '</td>';
+          extraActions.appendChild(tr);
+          gotExtraActions = true;
+        }
+      }
+    }
   }
 
   // build status cell
   const statusTd = document.createElement('td');
   statusTd.style['text-align'] = 'center';
   statusTd.innerHTML = `<div style="margin: 0 8px 8px 4px;">${round}</div>`;
+  const actionsTable = document.createElement('table');
+  actionsTable.style.margin = 'auto';
+  statusTd.appendChild(actionsTable);
+  const actionsRow = document.createElement('tr');
+  actionsTable.appendChild(actionsRow);
 
   if (passTurn) {
     // add pass turn link
-    passTurn.style.display = 'inline-block';
-    passTurn.style.verticalAlign = 'top';
-    passTurn.style.marginTop = '4px';
-    passTurn.style.marginRight = '2em';
-    statusTd.appendChild(passTurn);
+    const turnCell = document.createElement('td');
+    turnCell.style.paddingRight = '2em';
+    turnCell.appendChild(passTurn);
+    actionsRow.appendChild(turnCell);
+    if (gotExtraActions) {
+      actionsRow.appendChild(extraActions);
+    } else {
+      turnCell.style.paddingBottom = '1rem';
+    }
   }
 
   // add reload page button
-  const buttonDiv = document.createElement('div');
-  buttonDiv.style.display = 'inline-block';
+  const reloadCell = document.createElement('td');
   const reloadButton = document.createElement('button');
   reloadButton.innerHTML = 'Refresh Page';
   reloadButton.onclick = () => {
     window.location.href = gameUrl;
   };
-  buttonDiv.appendChild(reloadButton);
+  reloadCell.appendChild(reloadButton);
 
   if (autoReload) {
     // add auto-reload indicator
@@ -683,9 +707,9 @@ if (tracksTable) {
     reloadMsg.style.fontSize = '8pt';
     reloadMsg.style.color = '#999999';
     reloadMsg.innerHTML = 'auto-reload enabled';
-    buttonDiv.appendChild(reloadMsg);
+    reloadCell.appendChild(reloadMsg);
   }
-  statusTd.appendChild(buttonDiv);
+  actionsRow.appendChild(reloadCell);
 
 
   // build new tracks table
@@ -708,8 +732,14 @@ if (tracksTable) {
           // add onclick handler to send slack notification
           // eslint-disable-next-line no-unused-vars
           node.onclick = async (evt) => {
-            //evt.preventDefault();
-            //evt.stopPropagation();
+            if (forgotFreeMoves()) {
+              console.log('***** FORGOT FREE MOVES! *****');
+              if (!confirm('Do you want to give up your free moves?')) {
+                evt.preventDefault();
+                evt.stopPropagation();
+                return;
+              }
+            }
             await sendSlackNotification();
           }
         }
@@ -1004,6 +1034,25 @@ function trim(value) {
 }
 
 
+function getLastAction() {
+  const log = document.getElementById('nations-recentlog');
+  return log ? trim(log.children[log.children.length - 1].innerHTML) : '';
+}
+
+function forgotFreeMoves() {
+  let action = getLastAction();
+  const idx = action.indexOf(`${username}: `);
+  if (idx === -1) {
+    return false;
+  }
+  action = action.substring(idx + username.length + 2, action.length);
+  if (action.indexOf('\'Korea\' special ability: may hire 2 architects for free') !== -1) {
+    return true;
+  }
+  return false;
+}
+
+
 /**
  * Sends Slack end-turn notification.
  */
@@ -1039,8 +1088,7 @@ function getSlackName() {
  * Gets action for Slack message.
  */
 function getSlackActionText() {
-  const log = document.getElementById('nations-recentlog');
-  let action = log ? trim(log.children[log.children.length - 1].innerHTML) : '';
+  let action = getLastAction();
 
   if (GM_config.get('slackDescriptiveMove')) {
     return getSlackFancyActionText(action);
