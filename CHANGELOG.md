@@ -1,3 +1,17 @@
+## [3.4.0](https://github.com/markwoon/RefinedNations/compare/v3.3.4...v3.4.0) (2020-10-22)
+
+
+### Features
+
+* always add difficulty levels to player tab ([4cf0fc1](https://github.com/markwoon/RefinedNations/commit/4cf0fc1472cd5058efcb6ad80eb4297a78487eab))
+* make # of saved games "dynamic" ([2616620](https://github.com/markwoon/RefinedNations/commit/2616620ac0418ec3134f5d5d85f346435b5666c0))
+
+
+### Bug Fixes
+
+* catch another slack notification emoji transform ([e245e4e](https://github.com/markwoon/RefinedNations/commit/e245e4e1736fd5c525da7e809fad343e121c4e63))
+* don't hide "Buy Advisor" action and check if forgetting free moves ([01bb0e7](https://github.com/markwoon/RefinedNations/commit/01bb0e7d33a5de0227b89c7fb2be43b9d8354d08))
+
 ### [3.3.4](https://github.com/markwoon/RefinedNations/compare/v3.3.3...v3.3.4) (2020-06-15)
 
 
