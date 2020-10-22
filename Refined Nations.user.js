@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Refined Nations
-// @version      3.3.4
+// @version      3.4.0
 // @description  UI tweaks for MaBi Web Nations
 // @match        http://www.mabiweb.com/modules.php?name=Game_Manager
 // @match        http://www.mabiweb.com/modules.php?name=GM_Nations*
@@ -19,15 +19,21 @@
 /* global GM_config, RefinedNationsConfig */
 'use strict';
 
-let isConfigOpen = false;
 let gameUrl;
 
+const MAX_SAVED_GAMES = 10;
+let numSavedGames = 6;
+let isConfigOpen = false;
 
 /**
  * GM_config open callback.
  */
 const onOpenConfig = () => {
   isConfigOpen = true;
+  for (let x = numSavedGames + 1; x <= MAX_SAVED_GAMES; x += 1) {
+    GM_config.fields[`game${x}Id`].remove();
+    GM_config.fields[`game${x}Slack`].remove();
+  }
 }
 /**
  * GM_config save callback.  Closes settings panel and reloads page to apply changes.
@@ -54,239 +60,9 @@ title.innerHTML = 'Refined Nations Config<div style="font-size: 9pt; background-
 /**
  * Initialize config.
  */
-GM_config.init({
-  id: 'RefinedNationsConfig',
-  title: title,
-  fields: {
-    hideChrome: {
-      section: 'UI',
-      label: 'Hide Extraneous UI',
-      labelPos: 'left',
-      type: 'checkbox',
-      default: true,
-      title: 'Hides the MaBi Web UI and as much unnecessary UI as possible.'
-    },
-    hideHeader: {
-      label: 'Hide Game Header',
-      type: 'checkbox',
-      default: true,
-      title: 'Hides the Nations game header containing player info.',
-    },
-    showPersonalNotes: {
-      label: 'Relocate Personal Notes',
-      type: 'checkbox',
-      default: true,
-      title: 'Move personal notes from tab and place next to player board.'
-    },
-
-    autoReload: {
-      section: [
-        'Auto-Reloading',
-        'If you are a player in the game, this will auto-reload the page.  When it is your turn, you will get a browser notification.',
-      ],
-      label: 'Enable Auto-Reloading',
-      labelPos: 'left',
-      type: 'checkbox',
-      default: false,
-      title: 'If enabled, page will auto-reload and notify you when it is your turn.'
-    },
-    reloadInterval: {
-      label: 'Interval (minutes)',
-      labelPos: 'left',
-      type: 'unsigned int',
-      size: 2,
-      default: 5,
-      title: 'The interval between reloads.',
-    },
-
-    showAllBoards: {
-      section: 'Player Boards',
-      label: 'Show All Boards',
-      labelPos: 'left',
-      type: 'checkbox',
-      default: true,
-      title: 'If enabled, this will show all player boards on the same page.'
-    },
-    showBoardsInPlayerOrder: {
-      label: 'Show My Board In Player Order',
-      type: 'checkbox',
-      default: false,
-      title: 'By default, your board will always be first.  Enabling this will place your board in turn order.'
-    },
-
-    player1: {
-      section: [
-        'Board Order',
-        'This controls the ordering of player boards when showing all boards.  Do not include yourself in this list.  ' +
-        'Listed players that are not in the game will be ignored.  ' +
-        'Players in the game that are not listed will have their boards displayed in turn order.'
-      ],
-      label: 'Player',
-      labelPos: 'left',
-      type: 'text',
-      default: '',
-    },
-    player2: {
-      label: 'Player',
-      type: 'text',
-      default: '',
-    },
-    player3: {
-      label: 'Player',
-      type: 'text',
-      default: '',
-    },
-    player4: {
-      label: 'Player',
-      type: 'text',
-      default: '',
-    },
-    player5: {
-      label: 'Player',
-      type: 'text',
-      default: '',
-    },
-    player6: {
-      label: 'Player',
-      type: 'text',
-      default: '',
-    },
-    //
-    game1Id: {
-      section: [
-        'Games',
-        'This section facilitates playing multiple games at a time.  ' +
-        'Listing your games here will allow you to switch between them in the game header.  ' +
-        'Adding a Slack Incoming Webhook for a game will post notifications to that channel when ' +
-        'you have completed your move.'
-      ],
-      label: 'Game 1',
-      labelPos: 'left',
-      type: 'text',
-      default: '',
-      title: 'Format = "Game ID:Game Name"',
-    },
-    game1Slack: {
-      label: 'Slack Webhook',
-      type: 'text',
-      default: '',
-      size: 40,
-      title: 'Slack Webhook URL to post to whenever you complete your move in Game 1.',
-    },
-    //
-    game2Id: {
-      label: 'Game 2',
-      labelPos: 'left',
-      type: 'text',
-      default: '',
-      title: 'Format = "Game ID:Game Name"',
-    },
-    game2Slack: {
-      label: 'Slack Webhook',
-      type: 'text',
-      default: '',
-      size: 40,
-      title: 'The Slack Webhook URL to post to whenever you complete your move in Game 2.',
-    },
-    //
-    game3Id: {
-      label: 'Game 3',
-      labelPos: 'left',
-      type: 'text',
-      default: '',
-      title: 'Format = "Game ID:Game Name"',
-    },
-    game3Slack: {
-      label: 'Slack Webhook',
-      type: 'text',
-      default: '',
-      size: 40,
-      title: 'The Slack Webhook URL to post to whenever you complete your move in Game 3.',
-    },
-    //
-    game4Id: {
-      label: 'Game 4',
-      labelPos: 'left',
-      type: 'text',
-      default: '',
-      title: 'Format = "Game ID:Game Name"',
-    },
-    game4Slack: {
-      label: 'Slack Webhook',
-      type: 'text',
-      default: '',
-      size: 40,
-      title: 'The Slack Webhook URL to post to whenever you complete your move in Game 4.',
-    },
-    //
-    game5Id: {
-      label: 'Game 5',
-      labelPos: 'left',
-      type: 'text',
-      default: '',
-      title: 'Format = "Game ID:Game Name"',
-    },
-    game5Slack: {
-      label: 'Slack Webhook',
-      type: 'text',
-      default: '',
-      size: 40,
-      title: 'The Slack Webhook URL to post to whenever you complete your move in Game 5.',
-    },
-
-    slackDisplayName: {
-      section: [
-        'Slack',
-        'This is only used if you have Slack configured above.  These settings apply to all games.',
-      ],
-      label: 'Display Name',
-      labelPos: 'left',
-      type: 'string',
-      default: '',
-      title: 'The name to use when announcing your move.  Defaults to MaBi Web user ID if not specified.'
-    },
-    slackDescriptiveMove: {
-      label: 'Descriptive Notifications',
-      type: 'checkbox',
-      default: true,
-      title: 'Sends descriptive notifications instead of generic "moved"/"passed".'
-    },
-    slackEmojis: {
-      label: 'Use Emojis',
-      type: 'checkbox',
-      default: false,
-      title: 'If using descriptive notifications, this will enable the use of emojis.  Requires Nations emojis to be installed.'
-    },
-
-  },
-  events: {
-    open: onOpenConfig,
-    save: onSaveConfig,
-    close: onCloseConfig,
-  },
-  css: `
-#RefinedNationsConfig_header.config_header.center {
-  padding: 0;
-}
-#RefinedNationsConfig .center {
-  text-align: inherit;
-  padding: 4px;
-}
-#RefinedNationsConfig .section_desc {
-  border: none;
-  margin: 0;
-}
-#RefinedNationsConfig .section_header_holder {
-  margin-top: 1em;
-}
-#RefinedNationsConfig .section_header_holder > div:nth-of-type(2) {
-  margin-top: 0.5em;
-}
-[type="checkbox"] {
-  vertical-align: middle;
-}
-`,
-});
+// initially build support for MAX_SAVED_GAMES games, then hide unused games
+GM_config.init(buildGmConfig(MAX_SAVED_GAMES));
+numSavedGames = GM_config.get('numSavedGames');
 // noinspection JSUnresolvedFunction
 GM_registerMenuCommand('Refined Nations Settings', () => {
   GM_config.open();
@@ -328,7 +104,7 @@ const importGameConfig = (event) => {
     return;
   }
   const configs = [];
-  for (let x = 1; x < 6; x++) {
+  for (let x = 1; x <= numSavedGames; x++) {
     const config = getGameConfig(x);
     if (config) {
       configs.push(config);
@@ -355,7 +131,7 @@ const importGameConfig = (event) => {
   let updated = false;
   if (configs.length > 0) {
     console.log('Completed games', configs);
-    for (let configNum = 1; configNum < 6; configNum += 1) {
+    for (let configNum = 1; configNum <= numSavedGames; configNum += 1) {
       const config = getGameConfig(configNum);
       if (config) {
         // remove config for completed game
@@ -376,7 +152,7 @@ const importGameConfig = (event) => {
     for (let x = 0; x < games.length; x += 1) {
       let added = false;
       // find an empty spot to add game
-      for (let configNum = 1; configNum < 6; configNum += 1) {
+      for (let configNum = 1; configNum <= numSavedGames; configNum += 1) {
         const config = getGameConfig(configNum);
         if (!config || !config.id) {
           console.log(`Adding ${games[x].name} as Game ${configNum}`);
@@ -957,7 +733,7 @@ function movePersonalNotes(playerNode) {
 
 function loadGameMenu() {
   const configs = [];
-  for (let x = 1; x < 6; x++) {
+  for (let x = 1; x <= numSavedGames; x++) {
     const config = getGameConfig(x);
     if (config) {
       configs.push(config);
@@ -993,7 +769,7 @@ function loadGameMenu() {
  * Loads game config, if any.
  */
 function loadGameConfig() {
-  for (let x = 1; x < 6; x++) {
+  for (let x = 1; x <= numSavedGames; x++) {
     const config = getGameConfig(x);
     if (config && config.id === gameId) {
       console.log('Found game config:', config);
@@ -1198,4 +974,203 @@ function updateFavIcon() {
   } catch (error) {
     console.error('Error updating favicon', error);
   }
+}
+
+
+
+//----- GM_config helpers -----//
+
+/**
+ * Generates config fields for GM_config.
+ * This allows us to dynamically change the # of saved games.
+ */
+function buildConfigFields(numGames) {
+  let configFields = {
+    hideChrome: {
+      section: 'UI',
+      label: 'Hide Extraneous UI',
+      labelPos: 'left',
+      type: 'checkbox',
+      default: true,
+      title: 'Hides the MaBi Web UI and as much unnecessary UI as possible.'
+    },
+    hideHeader: {
+      label: 'Hide Game Header',
+      type: 'checkbox',
+      default: true,
+      title: 'Hides the Nations game header containing player info.',
+    },
+    showPersonalNotes: {
+      label: 'Relocate Personal Notes',
+      type: 'checkbox',
+      default: true,
+      title: 'Move personal notes from tab and place next to player board.'
+    },
+
+    autoReload: {
+      section: [
+        'Auto-Reloading',
+        'If you are a player in the game, this will auto-reload the page.  When it is your turn, you will get a browser notification.',
+      ],
+      label: 'Enable Auto-Reloading',
+      labelPos: 'left',
+      type: 'checkbox',
+      default: false,
+      title: 'If enabled, page will auto-reload and notify you when it is your turn.'
+    },
+    reloadInterval: {
+      label: 'Interval (minutes)',
+      labelPos: 'left',
+      type: 'unsigned int',
+      size: 2,
+      default: 5,
+      title: 'The interval between reloads.',
+    },
+
+    showAllBoards: {
+      section: 'Player Boards',
+      label: 'Show All Boards',
+      labelPos: 'left',
+      type: 'checkbox',
+      default: true,
+      title: 'If enabled, this will show all player boards on the same page.'
+    },
+    showBoardsInPlayerOrder: {
+      label: 'Show My Board In Player Order',
+      type: 'checkbox',
+      default: false,
+      title: 'By default, your board will always be first.  Enabling this will place your board in turn order.'
+    },
+
+    player1: {
+      section: [
+        'Board Order',
+        'This controls the ordering of player boards when showing all boards.  Do not include yourself in this list.  ' +
+        'Listed players that are not in the game will be ignored.  ' +
+        'Players in the game that are not listed will have their boards displayed in turn order.'
+      ],
+      label: 'Player',
+      labelPos: 'left',
+      type: 'text',
+      default: '',
+    },
+    player2: {
+      label: 'Player',
+      type: 'text',
+      default: '',
+    },
+    player3: {
+      label: 'Player',
+      type: 'text',
+      default: '',
+    },
+    player4: {
+      label: 'Player',
+      type: 'text',
+      default: '',
+    },
+    player5: {
+      label: 'Player',
+      type: 'text',
+      default: '',
+    },
+    player6: {
+      label: 'Player',
+      type: 'text',
+      default: '',
+    },
+    //
+    numSavedGames: {
+      section: [
+        'Games',
+        'This section facilitates playing multiple games at a time.  ' +
+        'Listing your games here will allow you to switch between them in the game header.  ' +
+        'Adding a Slack Incoming Webhook for a game will post notifications to that channel when ' +
+        'you have completed your move.'
+      ],
+      label: '# of Games',
+      labelPos: 'left',
+      type: 'unsigned int',
+      default: 6,
+      title: 'Number of games to track (maximum of 10).'
+    }
+  };
+  for (let x = 1; x <= numGames; x += 1) {
+    configFields[`game${x}Id`] = {
+      label: `Game ${x}`,
+      labelPos: 'left',
+      type: 'text',
+      default: '',
+      title: 'Format = "Game ID:Game Name"',
+    };
+    configFields[`game${x}Slack`] = {
+      label: 'Slack Webhook',
+      type: 'text',
+      default: '',
+      size: 40,
+      title: `Slack Webhook URL to post to whenever you complete your move in Game ${x}.`,
+    }
+  }
+  configFields = {
+    ...configFields,
+    slackDisplayName: {
+      section: [
+        'Slack',
+        'This is only used if you have Slack configured above.  These settings apply to all games.',
+      ],
+      label: 'Display Name',
+      labelPos: 'left',
+      type: 'string',
+      default: '',
+      title: 'The name to use when announcing your move.  Defaults to MaBi Web user ID if not specified.'
+    },
+    slackDescriptiveMove: {
+      label: 'Descriptive Notifications',
+      type: 'checkbox',
+      default: true,
+      title: 'Sends descriptive notifications instead of generic "moved"/"passed".'
+    },
+    slackEmojis: {
+      label: 'Use Emojis',
+      type: 'checkbox',
+      default: false,
+      title: 'If using descriptive notifications, this will enable the use of emojis.  Requires Nations emojis to be installed.'
+    },
+  };
+  return configFields;
+}
+
+function buildGmConfig(numGames) {
+  return {
+    id: 'RefinedNationsConfig',
+    title: title,
+    fields: buildConfigFields(numGames),
+    events: {
+      open: onOpenConfig,
+      save: onSaveConfig,
+      close: onCloseConfig,
+    },
+    css: `
+#RefinedNationsConfig_header.config_header.center {
+  padding: 0;
+}
+#RefinedNationsConfig .center {
+  text-align: inherit;
+  padding: 4px;
+}
+#RefinedNationsConfig .section_desc {
+  border: none;
+  margin: 0;
+}
+#RefinedNationsConfig .section_header_holder {
+  margin-top: 1em;
+}
+#RefinedNationsConfig .section_header_holder > div:nth-of-type(2) {
+  margin-top: 0.5em;
+}
+[type="checkbox"] {
+  vertical-align: middle;
+}
+`,
+  };
 }
