@@ -1,3 +1,10 @@
+## [3.5.0](https://github.com/markwoon/RefinedNations/compare/v3.4.0...v3.5.0) (2020-12-19)
+
+
+### Features
+
+* add auto-update support to game manager page ([e0a2a9c](https://github.com/markwoon/RefinedNations/commit/e0a2a9cd77f40e228b6a57b8a18b9b9d5d38c90c))
+
 ## [3.4.0](https://github.com/markwoon/RefinedNations/compare/v3.3.4...v3.4.0) (2020-10-22)
 
 
