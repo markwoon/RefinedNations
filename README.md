@@ -1,6 +1,6 @@
 # RefinedNations
 
-[![GreasyFork](https://img.shields.io/badge/GreasyFork-3.4.0-green)](https://greasyfork.org/en/scripts/403128-refined-nations)
+[![GreasyFork](https://img.shields.io/badge/GreasyFork-3.5.0-green)](https://greasyfork.org/en/scripts/403128-refined-nations)
 
 This is a userscript for Nations on MaBi Web.
 
@@ -61,7 +61,9 @@ One you've added that, you'll see your games show up in the header:
 <img src="images/game_menu.png" alt="Game menu in header" width="600" />
 
 
-#### Importing from the Game Manager
+#### Game Manager
+
+##### Importing Games
 
 As of v3.2.0, Refined Nations can import your games from the Game Manager.
 
@@ -74,6 +76,10 @@ This will both:
 * delete completed games from your config (a game is "completed" if it can't be found in your running games list)
 * add new games to open spots in your config (a game is "new" if it can't be found in your config)
 
+
+##### Auto-Reload
+
+As of v3.5.0, if auto-reloading are enabled, the Game Manager page will also auto-reload until it is your turn in one of your games.  When this happens, you will get a notification and the tab icon will change to <img src="images/marie_curie.png" alt="Marie Curie icon" height="16" />
 
 
 ### Slack Integration

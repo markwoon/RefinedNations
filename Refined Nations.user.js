@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Refined Nations
-// @version      3.4.0
+// @version      3.5.0
 // @description  UI tweaks for MaBi Web Nations
-// @match        http://www.mabiweb.com/modules.php?name=Game_Manager
+// @match        http://www.mabiweb.com/modules.php?name=Game_Manager*
 // @match        http://www.mabiweb.com/modules.php?name=GM_Nations*
 // @author       Mark Woon
 // @namespace    https://github.com/markwoon/
@@ -78,6 +78,19 @@ function findIndex(array, matcher) {
     }
   }
   return -1;
+}
+
+
+let username = '';
+const logoutLink = document.querySelector('a[href="modules.php?name=Your_Account&op=logout"]');
+if (logoutLink) {
+  // noinspection JSUnresolvedVariable
+  const welcomeText = logoutLink.parentNode.innerHTML;
+  const match = welcomeText.match(/Welcome (\w+)!/);
+  if (match) {
+    username = match[1];
+  }
+  console.log('Logged in as', username);
 }
 
 
@@ -178,26 +191,61 @@ const importGameConfig = (event) => {
   }
 }
 
-if (window.location.href === 'http://www.mabiweb.com/modules.php?name=Game_Manager') {
+if (window.location.href.indexOf('http://www.mabiweb.com/modules.php?name=Game_Manager') !== -1) {
   console.log('In Game Manager');
-  const gameLists = document.querySelectorAll('#gamemanager-gamelists > div');
-  if (gameLists) {
-    for (let x = 0; x < gameLists.length; x += 1) {
-      console.log(gameLists[x]);
-      if (gameLists[x].innerHTML.indexOf('Your running games') !== -1) {
-        // add import button
-        const importBtn = document.createElement('button');
-        importBtn.innerHTML = 'Import into Refined Nations';
-        importBtn['data-listIndex'] = x;
-        importBtn.onclick = importGameConfig;
-        importBtn.style.float = 'right';
-        importBtn.style.margin = '0 5px 4px 0';
-        importBtn.style.display = 'inline';
-        gameLists[x].appendChild(importBtn);
-        break;
+  if (!username) {
+    console.log('...but not logged in')
+    updateFavIcon(false);
+
+  } else {
+    const gameLists = document.querySelectorAll('#gamemanager-gamelists > div');
+    if (gameLists) {
+      let listIndex = -1;
+      for (let x = 0; x < gameLists.length; x += 1) {
+        if (gameLists[x].innerHTML.indexOf('Your running games') !== -1) {
+          listIndex = x;
+          // add import button
+          const importBtn = document.createElement('button');
+          importBtn.innerHTML = 'Import into Refined Nations';
+          importBtn['data-listIndex'] = x;
+          importBtn.onclick = importGameConfig;
+          importBtn.style.float = 'right';
+          importBtn.style.margin = '0 5px 4px 0';
+          importBtn.style.display = 'inline';
+          gameLists[x].appendChild(importBtn);
+          break;
+        }
+      }
+
+      if (listIndex === -1) {
+        console.log('...but not in any games');
+        updateFavIcon(false);
+        // noinspection JSAnnotator
+        return;
+      }
+
+      let gotTurn = false;
+      const gamesTables = document.querySelectorAll('#gamemanager-gamelists > table > tbody');
+      if (gamesTables) {
+        const gamesTable = gamesTables[listIndex];
+        if (gamesTable) {
+          for (let x = 1; x < gamesTable.children.length; x += 1) {
+            const tr = gamesTable.children[x];
+            if (tr.innerHTML.indexOf(`<strong style="color:red">${username}</strong>`) !== -1) {
+              gotTurn = true;
+              break;
+            }
+          }
+        }
+      }
+      updateFavIcon(gotTurn);
+
+      if (GM_config.get('autoReload')) {
+        handleAutoReload(gotTurn);
       }
     }
   }
+
   // noinspection JSAnnotator
   return;
 }
@@ -279,18 +327,8 @@ if (GM_config.get('hideHeader')) {
 
 
 
-// get username
-let username = '';
-const logoutLink = document.querySelector('a[href="modules.php?name=Your_Account&op=logout"]');
-if (logoutLink) {
-  // noinspection JSUnresolvedVariable
-  const welcomeText = logoutLink.parentNode.innerHTML;
-  const match = welcomeText.match(/Welcome (\w+)!/);
-  if (match) {
-    username = match[1];
-  }
-  console.log('Logged in as', username);
-
+if (username) {
+  // add game menu
   const menu = loadGameMenu();
   if (menu) {
     const tr = logoutLink.parentNode.parentNode.parentNode.parentNode;
@@ -364,7 +402,7 @@ if (userIsPlaying) {
     console.log('Making player\'s board first');
     players.push(username);
   }
-  updateFavIcon();
+  updateFavIcon(isUserTurn);
 }
 for (let x = 1; x < 7; x++) {
   const pid = GM_config.get(`player${x}`);
@@ -632,22 +670,7 @@ if (p1) {
 
 
 if (autoReload) {
-  console.log('Auto-reload enabled');
-  if (currentPlayer === username) {
-    console.log('...but it\'s your turn');
-    if (window.location.href.indexOf('&reloaded=true') !== -1) {
-      // noinspection JSUnresolvedFunction
-      GM_notification(`It's your turn!`, 'Nations@Mabi Web', '', () => window.focus());
-    }
-  } else {
-    const reloadInterval = GM_config.get('reloadInterval');
-    if (reloadInterval > 0) {
-      console.log(`Will reload in ${reloadInterval} minute${reloadInterval > 1 ? 's' : ''}`);
-      setTimeout(() => { window.location.href = gameUrl + '&reloaded=true'; }, 60000 * reloadInterval);
-    } else {
-      console.log('Invalid reloadTimer value');
-    }
-  }
+  handleAutoReload(currentPlayer === username);
 }
 
 
@@ -980,16 +1003,51 @@ function getSlackGameLink() {
   return `in <${gameUrl}|game ${gameId}>`;
 }
 
+
+/**
+ * Handle auto-reloading: either schedule auto-reload, or notify if auto-reloaded and it's now the
+ * user's turn.
+ */
+function handleAutoReload(gotTurn) {
+  console.log('Auto-reload enabled');
+  if (gotTurn) {
+    console.log('...but it\'s your turn');
+    if (window.location.href.indexOf('&reloaded=true') !== -1) {
+      // noinspection JSUnresolvedFunction
+      GM_notification(`It's your turn!`, 'Nations@Mabi Web', '', () => window.focus());
+    }
+  } else {
+    const reloadInterval = GM_config.get('reloadInterval');
+    if (reloadInterval > 0) {
+      console.log(`Will reload in ${reloadInterval} minute${reloadInterval > 1 ? 's' : ''}`);
+      setTimeout(() => {
+        if (gameUrl) {
+          window.location.href = gameUrl + '&reloaded=true';
+        } else {
+          if (window.location.href.indexOf('&reloaded=true') !== -1) {
+            window.location.reload();
+          } else {
+            window.location = window.location + '&reloaded=true';
+          }
+        }
+      }, 60000 * reloadInterval);
+    } else {
+      console.log('Invalid reloadTimer value');
+    }
+  }
+}
+
+
 /**
  * Updates the favicon.
  */
-function updateFavIcon() {
+function updateFavIcon(showTurnIcon) {
   console.log('Updating favicon');
   try {
     let link = document.createElement('link');
     link.rel = 'shortcut icon';
     link.type = 'image/png';
-    link.href = isUserTurn
+    link.href = showTurnIcon
         ? 'https://raw.githubusercontent.com/markwoon/RefinedNations/b14a0e06e8f585a451d6d99e40a08a6f04b43398/images/marie_curie.png'
         : 'http://www.mabiweb.com/favicon.ico';
     document.getElementsByTagName('head')[0].appendChild(link);
