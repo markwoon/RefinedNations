@@ -2,7 +2,9 @@
 // @name         Refined Nations
 // @version      3.5.0
 // @description  UI tweaks for MaBi Web Nations
-// @match        http://www.mabiweb.com/modules.php?name=Game_Manager*
+// @match        http://www.mabiweb.com/modules.php?name=Game_Manager
+// @match        http://www.mabiweb.com/modules.php?name=Game_Manager&reloaded=true
+// @match        http://www.mabiweb.com/modules.php?name=Game_Manager&op=your_games*
 // @match        http://www.mabiweb.com/modules.php?name=GM_Nations*
 // @author       Mark Woon
 // @namespace    https://github.com/markwoon/
