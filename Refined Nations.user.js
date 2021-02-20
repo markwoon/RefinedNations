@@ -670,6 +670,28 @@ if (p1) {
   }
 }
 
+let warnPocahontas = false;
+for (let x = 0; x < players.length; x++) {
+  if (players[x] !== username) {
+    const p = document.getElementById(players[x]);
+    console.log(p);
+    const img = p.querySelector('img[src="modules/GM_Nations/images/Progress_Cards/Pocahontas.jpg"');
+    if (img) {
+      warnPocahontas = true;
+    }
+  }
+}
+if (warnPocahontas) {
+  const tr = document.querySelector('#nations-tracks table tbody tr');
+  if (tr) {
+    const td = document.createElement('td');
+    td.style.padding = '1.5em 0 0 1.5em';
+    td.style.verticalAlign = 'top';
+    td.innerHTML = '<h4>Alerts</h4><ul style="padding-left: 1.5em;"><li><b>Pocahontas</b> in play!</ul>';
+    tr.appendChild(td);
+  }
+}
+
 
 if (autoReload) {
   handleAutoReload(currentPlayer === username);
