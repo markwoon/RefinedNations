@@ -671,35 +671,73 @@ if (p1) {
   }
 }
 
-let warnAssassin = false;
-let warnPocahontas = false;
+
+const warnings = [];
+
+function warnIfUnderConstruction(playerBoard, wonder) {
+  const img = playerBoard.querySelector(`img[src="modules/GM_Nations/images/Progress_Cards/${wonder}.jpg"]`);
+  if (img && img.style.top === '33px') {
+    warnings.push(`<li><b style="color: red">${wonder.replaceAll('_', ' ')}</b> under construction!</li>`);
+  }
+}
+function warnIfInPlay(playerBoard, wonder, hint) {
+  const img = playerBoard.querySelector(`img[src="modules/GM_Nations/images/Progress_Cards/${wonder}.jpg"]`);
+  if (img) {
+    const hintText = hint ? `(${hint})` : '';
+    warnings.push(`<li><b style="color: red">${wonder.replaceAll('_', ' ')}</b> ${hintText} in play!</li>`);
+  }
+}
+
 for (let x = 0; x < players.length; x++) {
   if (players[x] !== username) {
     const p = document.getElementById(players[x]);
-    console.log(p);
-    let img = p.querySelector('img[src="modules/GM_Nations/images/Progress_Cards/Pocahontas.jpg"]');
-    if (img) {
-      warnPocahontas = true;
+
+    warnIfInPlay(p, 'Assassin');
+    warnIfInPlay(p, 'Cape_of_Good_Hope');
+    warnIfInPlay(p, 'Pocahontas');
+
+    warnIfUnderConstruction(p, 'British_Museum');
+    warnIfUnderConstruction(p, 'Terracotta_Army');
+    warnIfUnderConstruction(p, 'Titanic');
+
+    let img = p.querySelector('img[src="modules/GM_Nations/images/Dynasties_Cards/Axumite_Kingdom.jpg"]');
+    if (img && img.getAttribute('width') != 30) {
+      warnings.push('<li><b style="color: red">Axumite Kingdom</b> in play!</li>');
     }
-    img = p.querySelector('img[src="modules/GM_Nations/images/Progress_Cards/Assassin.jpg"]');
-    if (img) {
-      warnAssassin = true;
+
+    img = p.querySelector('img[src="modules/GM_Nations/images/Dynasties_Cards/Jagellonian_Dynasty.jpg"]');
+    if (img && img.getAttribute('width') != 30) {
+      warnings.push('<li><b style="color: red">Jagellonian Dynasty</b> in play!</li>');
+    }
+
+    const mongols = p.querySelector('img[src="modules/GM_Nations/images/DPlayerBoard_Mongolia.jpg"]');
+    if (mongols) {
+      const goldenHorde = p.querySelector('img[src="modules/GM_Nations/images/Dynasties_Cards/Golden_Horde.jpg"]');
+      const yuanDynasty = p.querySelector('img[src="modules/GM_Nations/images/Dynasties_Cards/Yuan_Dynasty.jpg"]');
+      if ((!goldenHorde || goldenHorde.getAttribute('width') == 30) &&
+          (!yuanDynasty || yuanDynasty.getAttribute('width') == 30)) {
+        warnings.push('<li>Mongolia\'s default dynasty in play (war penalty)!</li>');
+      }
+      continue;
+    }
+
+    const vikings = p.querySelector('img[src="modules/GM_Nations/images/DPlayerBoard_Vikings.jpg"]');
+    if (vikings) {
+      const varangians = p.querySelector('img[src="modules/GM_Nations/images/Dynasties_Cards/Varangians.jpg"]');
+      const normans = p.querySelector('img[src="modules/GM_Nations/images/Dynasties_Cards/Normans.jpg"]');
+      if ((!normans || normans.getAttribute('width') == 30) &&
+          (!varangians || varangians.getAttribute('width') == 30)) {
+        warnings.push('<li>Viking\'s default dynasty in play (production penalty)!</li>');
+      }
     }
   }
 }
-if (warnAssassin || warnPocahontas) {
+if (warnings.length > 0) {
   const tr = document.querySelector('#nations-tracks table tbody tr');
   if (tr) {
     const td = document.createElement('td');
     td.style.padding = '1.5em 0 0 1.5em';
     td.style.verticalAlign = 'top';
-    let warnings = [];
-    if (warnAssassin) {
-      warnings.push('<li><b style="color: red">Assassin</b> in play!</li>');
-    }
-    if (warnPocahontas) {
-      warnings.push('<li><b style="color: red">Pocahontas</b> in play!</li>');
-    }
     td.innerHTML = '<h4>Alerts</h4><ul style="padding-left: 1.5em;">' + warnings.join('') + '</ul>';
     tr.appendChild(td);
   }
@@ -886,7 +924,7 @@ function getGameConfig(num) {
  */
 function trim(value) {
   if (typeof value === 'string') {
-    return value.replace(/^\s+|\s+$/g,'');
+    return value.replace(/^\s+|\s+$/g, '');
   }
   return value;
 }
