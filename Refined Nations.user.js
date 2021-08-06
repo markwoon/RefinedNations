@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Refined Nations
-// @version      3.5.0
+// @version      3.6.0
 // @description  UI tweaks for MaBi Web Nations
 // @match        http://www.mabiweb.com/modules.php?name=Game_Manager
 // @match        http://www.mabiweb.com/modules.php?name=Game_Manager&reloaded=true

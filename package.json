@@ -1,6 +1,6 @@
 {
   "name": "react-nations",
-  "version": "3.5.0",
+  "version": "3.6.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/markwoon/RefinedNations.git"
@@ -24,22 +24,6 @@
         "@google/semantic-release-replace-plugin",
         {
           "replacements": [
-            {
-              "files": [
-                "README.md"
-              ],
-              "from:": "\\[![GreasyFork]\\(https://img.shields.io/badge/GreasyFork-([0-9.]+)-green\\)]\\(https://greasyfork.org/en/scripts/403128-refined-nations\\)",
-              "to:": "[![GreasyFork](https://img.shields.io/badge/GreasyFork-${nextRelease.version}-green)](https://greasyfork.org/en/scripts/403128-refined-nations)",
-              "results": [
-                {
-                  "file": "README.md",
-                  "hasChanged": true,
-                  "numMatches": 1,
-                  "numReplacements": 1
-                }
-              ],
-              "countMatches": true
-            },
             {
               "files": [
                 "Refined Nations.user.js"
@@ -82,7 +66,6 @@
           "assets": [
             "CHANGELOG.md",
             "package.json",
-            "README.md",
             "Refined Nations.user.js"
           ]
         }

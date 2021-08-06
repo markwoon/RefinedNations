@@ -1,3 +1,17 @@
+## [3.6.0](https://github.com/markwoon/RefinedNations/compare/v3.5.0...v3.6.0) (2021-08-06)
+
+
+### Features
+
+* add warnings ([2913c08](https://github.com/markwoon/RefinedNations/commit/2913c08915f59491e58a6ec3b8ea441414b46185))
+
+
+### Bug Fixes
+
+* add Assassin warning ([7b7c12b](https://github.com/markwoon/RefinedNations/commit/7b7c12b1049c7245d38d06241b989d0985e8059f))
+* add Pocahontas warning ([7507f5e](https://github.com/markwoon/RefinedNations/commit/7507f5e2707832f1726aee6495b374eb45c598de))
+* restrict when script will run ([961ad40](https://github.com/markwoon/RefinedNations/commit/961ad400143bf5cdcf9b8f15c09d1a73f1593dd1))
+
 ## [3.5.0](https://github.com/markwoon/RefinedNations/compare/v3.4.0...v3.5.0) (2020-12-19)
 
 
