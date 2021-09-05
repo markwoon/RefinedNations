@@ -1,3 +1,10 @@
+### [3.6.1](https://github.com/markwoon/RefinedNations/compare/v3.6.0...v3.6.1) (2021-09-05)
+
+
+### Bug Fixes
+
+* fix buy advisor extra actions ([738dac9](https://github.com/markwoon/RefinedNations/commit/738dac98a4828c19a4d4d720679945ad8606c197))
+
 ## [3.6.0](https://github.com/markwoon/RefinedNations/compare/v3.5.0...v3.6.0) (2021-08-06)
 
 
