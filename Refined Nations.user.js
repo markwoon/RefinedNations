@@ -683,8 +683,8 @@ function warnIfUnderConstruction(playerBoard, wonder) {
 function warnIfInPlay(playerBoard, wonder, hint) {
   const img = playerBoard.querySelector(`img[src="modules/GM_Nations/images/Progress_Cards/${wonder}.jpg"]`);
   if (img) {
-    const hintText = hint ? `(${hint})` : '';
-    warnings.push(`<li><b style="color: red">${wonder.replaceAll('_', ' ')}</b> ${hintText} in play!</li>`);
+    const hintText = hint ? `: ${hint}` : '!';
+    warnings.push(`<li><b style="color: red">${wonder.replaceAll('_', ' ')}</b> in play${hintText}</li>`);
   }
 }
 
@@ -695,6 +695,7 @@ for (let x = 0; x < players.length; x++) {
     warnIfInPlay(p, 'Assassin');
     warnIfInPlay(p, 'Cape_of_Good_Hope');
     warnIfInPlay(p, 'Pocahontas');
+    warnIfInPlay(p, 'Hannibal', 'battles +$1');
 
     warnIfUnderConstruction(p, 'British_Museum');
     warnIfUnderConstruction(p, 'Terracotta_Army');
@@ -716,7 +717,7 @@ for (let x = 0; x < players.length; x++) {
       const yuanDynasty = p.querySelector('img[src="modules/GM_Nations/images/Dynasties_Cards/Yuan_Dynasty.jpg"]');
       if ((!goldenHorde || goldenHorde.getAttribute('width') == 30) &&
           (!yuanDynasty || yuanDynasty.getAttribute('width') == 30)) {
-        warnings.push('<li>Mongolia\'s default dynasty in play (war penalty)!</li>');
+        warnings.push('<li>Mongolia\'s default dynasty in play: war penalty</li>');
       }
       continue;
     }
@@ -727,7 +728,7 @@ for (let x = 0; x < players.length; x++) {
       const normans = p.querySelector('img[src="modules/GM_Nations/images/Dynasties_Cards/Normans.jpg"]');
       if ((!normans || normans.getAttribute('width') == 30) &&
           (!varangians || varangians.getAttribute('width') == 30)) {
-        warnings.push('<li>Viking\'s default dynasty in play (production penalty)!</li>');
+        warnings.push('<li>Viking\'s default dynasty in play: production penalty</li>');
       }
     }
   }
