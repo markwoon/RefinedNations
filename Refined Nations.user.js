@@ -487,19 +487,26 @@ if (tracksTable) {
   const military = tracksTable.children[2].children[0];
   const science = tracksTable.children[4].children[0];
   let extraActions = document.createElement('table');
+  extraActions.style.paddingRight = '2em';
   let gotExtraActions = false;
   let passTurn;
   if (tracksTable.children.length > 5) {
     for (let x = 5; x < tracksTable.children.length; x += 1) {
-      const cellValue = tracksTable.children[x].children[0];
+      const cellValue = tracksTable.children[x];
       if (cellValue.innerHTML.indexOf('Pass Turn') !== -1) {
         passTurn = cellValue;
       } else if (cellValue.innerHTML.indexOf('buy') === 0) {
-        if (x + 1 < tracksTable.children.length && tracksTable.children[x + 1].children[0].innerHTML.indexOf('Buy-Advisor') !== -1) {
+        if (x + 1 < tracksTable.children.length && tracksTable.children[x + 1].innerHTML.indexOf('Buy-Advisor') !== -1) {
           x += 1;
-          const linkCellValue = tracksTable.children[x].children[0];
+          const link = tracksTable.children[x].children[0];
+          link.style.color = 'blue';
+          link.style.verticalAlign = 'inherit';
           const tr = document.createElement('tr');
-          tr.innerHTML = '<td style="text-align: center; padding-left: 1.5em">' + cellValue + '</td><td>' + linkCellValue + '</td>';
+          const td = document.createElement('td');
+          td.innerHTML = cellValue.textContent.replace('buyfrom', 'buy from') + '&nbsp;';
+          td.style.verticalAlign = 'middle';
+          td.appendChild(link);
+          tr.appendChild(td);
           extraActions.appendChild(tr);
           gotExtraActions = true;
         }
