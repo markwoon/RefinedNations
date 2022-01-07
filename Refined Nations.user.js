@@ -696,13 +696,13 @@ function warnIfInPlay(playerBoard, wonder, hint) {
 }
 
 for (let x = 0; x < players.length; x++) {
+  const p = document.getElementById(players[x]);
+  warnIfInPlay(p, 'Pocahontas');
   if (players[x] !== username) {
-    const p = document.getElementById(players[x]);
-
     warnIfInPlay(p, 'Assassin');
     warnIfInPlay(p, 'Cape_of_Good_Hope');
-    warnIfInPlay(p, 'Pocahontas');
     warnIfInPlay(p, 'Hannibal', 'battles +$1');
+    warnIfInPlay(p, 'Sun_Tzu');
 
     warnIfUnderConstruction(p, 'British_Museum');
     warnIfUnderConstruction(p, 'Terracotta_Army');
@@ -727,6 +727,14 @@ for (let x = 0; x < players.length; x++) {
         warnings.push('<li>Mongolia\'s default dynasty in play: war penalty</li>');
       }
       continue;
+    }
+
+    const persia = p.querySelector('img[src="modules/GM_Nations/images/DPlayerBoard_Persia.jpg"]');
+    if (persia) {
+      const sassanid = p.querySelector('img[src="modules/GM_Nations/images/Dynasties_Cards/Sassanid_Empire.jpg"]');
+      if (sassanid) {
+        warnings.push('<li>Sassanid Empire in play: free turmoils</li>');
+      }
     }
 
     const vikings = p.querySelector('img[src="modules/GM_Nations/images/DPlayerBoard_Vikings.jpg"]');
