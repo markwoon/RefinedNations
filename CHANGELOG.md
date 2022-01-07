@@ -1,3 +1,10 @@
+### [3.6.2](https://github.com/markwoon/RefinedNations/compare/v3.6.1...v3.6.2) (2022-01-07)
+
+
+### Bug Fixes
+
+* always warn about Pocahontas and warn about Sun Tzu and Sassanid Empire ([87a6c3c](https://github.com/markwoon/RefinedNations/commit/87a6c3cea18e3c3fe792845013d16b655c127563))
+
 ### [3.6.1](https://github.com/markwoon/RefinedNations/compare/v3.6.0...v3.6.1) (2021-09-05)
 
 
