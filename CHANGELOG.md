@@ -1,3 +1,11 @@
+### [3.6.3](https://github.com/markwoon/RefinedNations/compare/v3.6.2...v3.6.3) (2022-04-28)
+
+
+### Bug Fixes
+
+* improve warnings ([164681c](https://github.com/markwoon/RefinedNations/commit/164681c2c2b24156e2c7a134b496e48a06b0c111))
+* warn about Petra and Piazza San Marco ([055ee40](https://github.com/markwoon/RefinedNations/commit/055ee4049ea75eb7d2d2c719620e78ffaaf23be1))
+
 ### [3.6.2](https://github.com/markwoon/RefinedNations/compare/v3.6.1...v3.6.2) (2022-01-07)
 
 

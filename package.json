@@ -1,6 +1,6 @@
 {
   "name": "react-nations",
-  "version": "3.6.2",
+  "version": "3.6.3",
   "repository": {
     "type": "git",
     "url": "https://github.com/markwoon/RefinedNations.git"
@@ -54,10 +54,22 @@
               "fix"
             ],
             "types": [
-              { "type": "feat", "section": "Features" },
-              { "type": "feature", "section": "Features" },
-              { "type": "fix", "section": "Improvements" },
-              { "type": "perf", "section": "Improvements" }
+              {
+                "type": "feat",
+                "section": "Features"
+              },
+              {
+                "type": "feature",
+                "section": "Features"
+              },
+              {
+                "type": "fix",
+                "section": "Improvements"
+              },
+              {
+                "type": "perf",
+                "section": "Improvements"
+              }
             ],
             "commitsSort": "header"
           }
