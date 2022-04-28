@@ -687,11 +687,19 @@ function warnIfUnderConstruction(playerBoard, userIcon, wonder) {
     warnings.push(`<li>${userIcon} <b>${wonder.replaceAll('_', ' ')}</b> under construction!</li>`);
   }
 }
-function warnIfInPlay(playerBoard, userIcon, wonder, hint) {
+function warnIfInPlay(playerBoard, userIcon, wonder, hint, useOnce = false) {
   const img = playerBoard.querySelector(`img[src="modules/GM_Nations/images/Progress_Cards/${wonder}.jpg"]`);
   if (img) {
+    let card = wonder.replaceAll('_', ' ');
     const hintText = hint ? `: ${hint}` : '';
-    warnings.push(`<li>${userIcon} <b>${wonder.replaceAll('_', ' ')}</b>${hintText}</li>`);
+    if (useOnce) {
+      console.log(img.nextSibling.getAttribute('src'));
+      if (img.nextSibling && img.nextSibling.hasAttribute('src') &&
+          img.nextSibling.getAttribute('src').endsWith('Token_X.png')) {
+        card = `<span style="text-decoration: line-through">${card}</span>`;
+      }
+    }
+    warnings.push(`<li>${userIcon} <b>${card}</b>${hintText}</li>`);
   }
 }
 
@@ -742,11 +750,13 @@ for (let x = 0; x < players.length; x++) {
   }
   const meepleIcon = `<img src="/modules/GM_Nations/images/Meeple_${userColor}.png" style="vertical-align: middle; height: 1.25em" />`;
 
-  warnIfInPlay(p, userIcon, 'Pocahontas', 'colonies require +4<img src="/modules/GM_Nations/images/Military.png" style="vertical-align: middle; height: 1.25em" />');
+  warnIfInPlay(p, userIcon, 'Pocahontas', 'all: colonies require +4<img src="/modules/GM_Nations/images/Military.png" style="vertical-align: middle; height: 1.25em" />');
   if (players[x] !== username) {
     warnIfInPlay(p, userIcon,'Assassin');
-    warnIfInPlay(p, userIcon,'Cape_of_Good_Hope');
+    warnIfInPlay(p, userIcon,'Cape_of_Good_Hope', 'colonies -4 <img src="/modules/GM_Nations/images/Military.png" style="vertical-align: middle; height: 1.25em" />');
     warnIfInPlay(p, userIcon, 'Hannibal', 'battles cost +1<img src="/modules/GM_Nations/images/Token_Gold.png" style="vertical-align: middle; height: 1.25em" />');
+    warnIfInPlay(p, userIcon, 'Petra', '(can exchange resources)', true);
+    warnIfInPlay(p, userIcon, 'Piazza_San_Marco', '(can exchange resources)', true);
     warnIfInPlay(p, userIcon, 'Sun_Tzu');
 
     warnIfUnderConstruction(p, userIcon, 'British_Museum');
