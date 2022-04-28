@@ -800,6 +800,16 @@ for (let x = 0; x < players.length; x++) {
       }
     }
 
+    const korea = p.querySelector('img[src="modules/GM_Nations/images/DPlayerBoard_Korea.jpg"]');
+    if (korea) {
+      const joseon = p.querySelector('img[src="modules/GM_Nations/images/Dynasties_Cards/Joseon_Kingdom.jpg"]');
+      const koryo = p.querySelector('img[src="modules/GM_Nations/images/Dynasties_Cards/Koryo_Kingdom.jpg"]');
+      if ((!joseon || joseon.getAttribute('width') === '30') &&
+          (!koryo || koryo.getAttribute('width') === '30')) {
+        addWarning(userIcon, 'Korea', ': +2 <img src="/modules/GM_Nations/images/Cube_Architect.png" alt="Architect" style="vertical-align: middle; height: 1.25em" />/golden age');
+      }
+    }
+
     const mongols = p.querySelector('img[src="modules/GM_Nations/images/DPlayerBoard_Mongolia.jpg"]');
     if (mongols) {
       const goldenHorde = p.querySelector('img[src="modules/GM_Nations/images/Dynasties_Cards/Golden_Horde.jpg"]');
