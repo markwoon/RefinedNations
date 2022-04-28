@@ -11,8 +11,8 @@
     "@semantic-release/changelog": "^6.0.1",
     "@semantic-release/git": "^10.0.1",
     "conventional-changelog-conventionalcommits": "^4.6.3",
-    "eslint": "^7.32.0",
-    "semantic-release": "^18.0.1"
+    "eslint": "^8.14.0",
+    "semantic-release": "^19.0.2"
   },
   "release": {
     "branches": [
@@ -52,6 +52,12 @@
               "feat",
               "perf",
               "fix"
+            ],
+            "types": [
+              { "type": "feat", "section": "Features" },
+              { "type": "feature", "section": "Features" },
+              { "type": "fix", "section": "Improvements" },
+              { "type": "perf", "section": "Improvements" }
             ],
             "commitsSort": "header"
           }
