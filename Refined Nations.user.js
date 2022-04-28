@@ -681,10 +681,14 @@ if (p1) {
 
 const warnings = [];
 
+function addWarning(userIcon, card, hint = '') {
+  warnings.push(`<li>${userIcon} <b>${card}</b>${hint}</li>`);
+}
+
 function warnIfUnderConstruction(playerBoard, userIcon, wonder) {
   const img = playerBoard.querySelector(`img[src="modules/GM_Nations/images/Progress_Cards/${wonder}.jpg"]`);
   if (img && img.style.top === '33px') {
-    warnings.push(`<li>${userIcon} <b>${wonder.replaceAll('_', ' ')}</b> under construction!</li>`);
+    addWarning(userIcon, wonder.replaceAll('_', ' '), ' under construction!')
   }
 }
 function warnIfInPlay(playerBoard, userIcon, wonder, hint, useOnce = false) {
@@ -699,12 +703,12 @@ function warnIfInPlay(playerBoard, userIcon, wonder, hint, useOnce = false) {
         card = `<span style="text-decoration: line-through">${card}</span>`;
       }
     }
-    warnings.push(`<li>${userIcon} <b>${card}</b>${hintText}</li>`);
+    addWarning(userIcon, card, hintText);
   }
 }
 
 function rgbToBoardColor(rgba) {
-  const hex = '#' + rgba.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+\.{0,1}\d*))?\)$/)
+  const hex = '#' + rgba.match(/^rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*(\d+\.?\d*))?\)$/)
       .slice(1)
       .map((n, i) => (i === 3 ? Math.round(parseFloat(n) * 255) : parseFloat(n))
           .toString(16)
@@ -746,17 +750,17 @@ for (let x = 0; x < players.length; x++) {
     console.warn('Cannot determine color for player', players[x]);
   } else {
     userColor = rgbToBoardColor(board.style.borderColor);
-    userIcon = `<img src="/modules/GM_Nations/images/Disc_${userColor}.png" style="vertical-align: middle; height: 1.25em" />`;
+    userIcon = `<img src="/modules/GM_Nations/images/Disc_${userColor}.png" alt="${userColor} player" style="vertical-align: middle; height: 1.25em" />`;
   }
-  const meepleIcon = `<img src="/modules/GM_Nations/images/Meeple_${userColor}.png" style="vertical-align: middle; height: 1.25em" />`;
+  const meepleIcon = `<img src="/modules/GM_Nations/images/Meeple_${userColor}.png" alt="${userColor} meeple" style="vertical-align: middle; height: 1.25em" />`;
 
-  warnIfInPlay(p, userIcon, 'Pocahontas', 'all: colonies require +4<img src="/modules/GM_Nations/images/Military.png" style="vertical-align: middle; height: 1.25em" />');
+  warnIfInPlay(p, userIcon, 'Pocahontas', 'all: colonies require +4<img src="/modules/GM_Nations/images/Military.png" alt="Military" style="vertical-align: middle; height: 1.25em" />');
   if (players[x] !== username) {
     warnIfInPlay(p, userIcon,'Assassin');
-    warnIfInPlay(p, userIcon,'Cape_of_Good_Hope', 'colonies -4 <img src="/modules/GM_Nations/images/Military.png" style="vertical-align: middle; height: 1.25em" />');
-    warnIfInPlay(p, userIcon, 'Hannibal', 'battles cost +1<img src="/modules/GM_Nations/images/Token_Gold.png" style="vertical-align: middle; height: 1.25em" />');
-    warnIfInPlay(p, userIcon, 'Petra', '(can exchange resources)', true);
-    warnIfInPlay(p, userIcon, 'Piazza_San_Marco', '(can exchange resources)', true);
+    warnIfInPlay(p, userIcon,'Cape_of_Good_Hope', 'colonies -4 <img src="/modules/GM_Nations/images/Military.png" alt="Military" style="vertical-align: middle; height: 1.25em" />');
+    warnIfInPlay(p, userIcon, 'Hannibal', 'battles cost +1<img src="/modules/GM_Nations/images/Token_Gold.png" alt="Gold" style="vertical-align: middle; height: 1.25em" />');
+    warnIfInPlay(p, userIcon, 'Petra', 'can exchange resources', true);
+    warnIfInPlay(p, userIcon, 'Piazza_San_Marco', 'can exchange resources', true);
     warnIfInPlay(p, userIcon, 'Sun_Tzu');
 
     warnIfUnderConstruction(p, userIcon, 'British_Museum');
@@ -764,35 +768,35 @@ for (let x = 0; x < players.length; x++) {
     warnIfUnderConstruction(p, userIcon, 'Titanic');
 
     let img = p.querySelector('img[src="modules/GM_Nations/images/Dynasties_Cards/Axumite_Kingdom.jpg"]');
-    if (img && img.getAttribute('width') != 30) {
-      warnings.push(`<li>${userIcon} Axumite Kingdom</li>`);
+    if (img && img.getAttribute('width') !== '30') {
+      addWarning(userIcon, 'Axumite Kingdom');
     }
 
     img = p.querySelector('img[src="modules/GM_Nations/images/Dynasties_Cards/Jagellonian_Dynasty.jpg"]');
-    if (img && img.getAttribute('width') != 30) {
-      warnings.push(`<li>${userIcon} Jagellonian Dynasty</b>`);
+    if (img && img.getAttribute('width') !== '30') {
+      addWarning(userIcon, 'Jagellonian Dynasty');
     }
 
     img = p.querySelector('img[src="modules/GM_Nations/images/Dynasties_Cards/Heian_Period.jpg"]');
-    if (img && img.getAttribute('width') != 30) {
-      warnings.push(`<li>${userIcon} Heian Period: +4<img src="/modules/GM_Nations/images/Heritage.png" style="vertical-align: middle; height: 1.25em" />/golden age</li>`);
+    if (img && img.getAttribute('width') !== '30') {
+      addWarning(userIcon, 'Heian Period',': +4<img src="/modules/GM_Nations/images/Heritage.png" alt="Books" style="vertical-align: middle; height: 1.25em" />/golden age</li>');
     }
 
     img = p.querySelector('img[src="modules/GM_Nations/images/Dynasties_Cards/Sassanid_Empire.jpg"]');
-    if (img && img.getAttribute('width') != 30) {
-      warnings.push(`<li>${userIcon} Sassanid Empire: free turmoils</li>`);
+    if (img && img.getAttribute('width') !== '30') {
+      addWarning(userIcon, 'Sassanid Empire', ': free turmoils');
     }
 
     const arabs = p.querySelector('img[src="modules/GM_Nations/images/DPlayerBoard_Arabs.jpg"]');
     if (arabs) {
       const umayyad = p.querySelector('img[src="modules/GM_Nations/images/Dynasties_Cards/Umayyad_Caliphate.jpg"]');
       const abbasid = p.querySelector('img[src="modules/GM_Nations/images/Dynasties_Cards/Abbasid_Caliphate.jpg"]');
-      if (umayyad && umayyad.getAttribute('width') != 30) {
-        warnings.push(`<li>${userIcon} Umayyad Caliphate: colonies -4<img src="/modules/GM_Nations/images/Military.png" style="vertical-align: middle; height: 1.25em" /></li>`);
-      } else if (abbasid && abbasid.getAttribute('width') != 30) {
-        warnings.push(`<li>${userIcon} Abbasid Caliphate: may buy <img src="/modules/GM_Nations/images/Token_VP.png" style="vertical-align: middle; height: 1.25em" /> when others buy golden age</li>`);
+      if (umayyad && umayyad.getAttribute('width') !== '30') {
+        addWarning(userIcon, 'Umayyad Caliphate', ': colonies -4<img src="/modules/GM_Nations/images/Military.png" alt="Military" style="vertical-align: middle; height: 1.25em" /></li>');
+      } else if (abbasid && abbasid.getAttribute('width') !== '30') {
+        addWarning(userIcon, 'Abbasid Caliphate', ': may buy <img src="/modules/GM_Nations/images/Token_VP.png" alt="VP" style="vertical-align: middle; height: 1.25em" /> when others buy golden age</li>');
       } else {
-        warnings.push(`<li>${userIcon} Arabs: +${meepleIcon}/battle</li>`);
+        addWarning(userIcon, 'Arabs', `: +${meepleIcon}/battle</li>`);
       }
     }
 
@@ -800,9 +804,9 @@ for (let x = 0; x < players.length; x++) {
     if (mongols) {
       const goldenHorde = p.querySelector('img[src="modules/GM_Nations/images/Dynasties_Cards/Golden_Horde.jpg"]');
       const yuanDynasty = p.querySelector('img[src="modules/GM_Nations/images/Dynasties_Cards/Yuan_Dynasty.jpg"]');
-      if ((!goldenHorde || goldenHorde.getAttribute('width') == 30) &&
-          (!yuanDynasty || yuanDynasty.getAttribute('width') == 30)) {
-        warnings.push(`<li>${userIcon} Mongols: war penalty</li>`);
+      if ((!goldenHorde || goldenHorde.getAttribute('width') === '30') &&
+          (!yuanDynasty || yuanDynasty.getAttribute('width') === '30')) {
+        addWarning(userIcon, 'Mongols', ': war penalty');
       }
       continue;
     }
@@ -811,9 +815,9 @@ for (let x = 0; x < players.length; x++) {
     if (vikings) {
       const varangians = p.querySelector('img[src="modules/GM_Nations/images/Dynasties_Cards/Varangians.jpg"]');
       const normans = p.querySelector('img[src="modules/GM_Nations/images/Dynasties_Cards/Normans.jpg"]');
-      if ((!normans || normans.getAttribute('width') == 30) &&
-          (!varangians || varangians.getAttribute('width') == 30)) {
-        warnings.push(`<li>${userIcon} Vikings: others lose resource after production</li>`);
+      if ((!normans || normans.getAttribute('width') === '30') &&
+          (!varangians || varangians.getAttribute('width') === '30')) {
+        addWarning(userIcon, 'Vikings', ': others lose resource after production');
       }
     }
   }
