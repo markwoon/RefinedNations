@@ -691,19 +691,22 @@ function warnIfUnderConstruction(playerBoard, userIcon, wonder) {
     addWarning(userIcon, wonder.replaceAll('_', ' '), ' under construction!')
   }
 }
-function warnIfInPlay(playerBoard, userIcon, wonder, hint, useOnce = false) {
+function warnIfInPlay(playerBoard, userIcon, wonder, hint, isArtifact = false, useOnce = false) {
   const img = playerBoard.querySelector(`img[src="modules/GM_Nations/images/Progress_Cards/${wonder}.jpg"]`);
   if (img) {
     let card = wonder.replaceAll('_', ' ');
     const hintText = hint ? `: ${hint}` : '';
-    if (useOnce) {
-      console.log(img.nextSibling.getAttribute('src'));
-      if (img.nextSibling && img.nextSibling.hasAttribute('src') &&
-          img.nextSibling.getAttribute('src').endsWith('Token_X.png')) {
-        card = `<span style="text-decoration: line-through">${card}</span>`;
+    if (isArtifact && img.style.top === '33px') {
+      addWarning(userIcon, wonder.replaceAll('_', ' '), ' under construction!')
+    } else {
+      if (useOnce) {
+        if (img.nextSibling && img.nextSibling.hasAttribute('src') &&
+            img.nextSibling.getAttribute('src').endsWith('Token_X.png')) {
+          card = `<span style="text-decoration: line-through">${card}</span>`;
+        }
       }
+      addWarning(userIcon, card, hintText);
     }
-    addWarning(userIcon, card, hintText);
   }
 }
 
@@ -757,10 +760,10 @@ for (let x = 0; x < players.length; x++) {
   warnIfInPlay(p, userIcon, 'Pocahontas', 'all: colonies require +4<img src="/modules/GM_Nations/images/Military.png" alt="Military" style="vertical-align: middle; height: 1.25em" />');
   if (players[x] !== username) {
     warnIfInPlay(p, userIcon,'Assassin');
-    warnIfInPlay(p, userIcon,'Cape_of_Good_Hope', 'colonies -4 <img src="/modules/GM_Nations/images/Military.png" alt="Military" style="vertical-align: middle; height: 1.25em" />');
+    warnIfInPlay(p, userIcon,'Cape_of_Good_Hope', 'colonies -4 <img src="/modules/GM_Nations/images/Military.png" alt="Military" style="vertical-align: middle; height: 1.25em" />', true);
     warnIfInPlay(p, userIcon, 'Hannibal', 'battles cost +1<img src="/modules/GM_Nations/images/Token_Gold.png" alt="Gold" style="vertical-align: middle; height: 1.25em" />');
-    warnIfInPlay(p, userIcon, 'Petra', 'can exchange resources', true);
-    warnIfInPlay(p, userIcon, 'Piazza_San_Marco', 'can exchange resources', true);
+    warnIfInPlay(p, userIcon, 'Petra', 'can exchange resources', true, true);
+    warnIfInPlay(p, userIcon, 'Piazza_San_Marco', 'can exchange resources', true, true);
     warnIfInPlay(p, userIcon, 'Sun_Tzu');
 
     warnIfUnderConstruction(p, userIcon, 'British_Museum');
@@ -770,6 +773,11 @@ for (let x = 0; x < players.length; x++) {
     let img = p.querySelector('img[src="modules/GM_Nations/images/Dynasties_Cards/Axumite_Kingdom.jpg"]');
     if (img && img.getAttribute('width') !== '30') {
       addWarning(userIcon, 'Axumite Kingdom');
+    }
+
+    img = p.querySelector('img[src="modules/GM_Nations/images/Dynasties_Cards/Democratic_Republicans.jpg"]');
+    if (img && img.getAttribute('width') !== '30') {
+      addWarning(userIcon, 'Democratic Republicans');
     }
 
     img = p.querySelector('img[src="modules/GM_Nations/images/Dynasties_Cards/Jagellonian_Dynasty.jpg"]');
