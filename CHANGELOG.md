@@ -1,3 +1,12 @@
+## [3.6.4](https://github.com/markwoon/RefinedNations/compare/v3.6.3...v3.6.4) (2022-10-24)
+
+
+### Bug Fixes
+
+* add warning for Korea ([81918f9](https://github.com/markwoon/RefinedNations/commit/81918f90d8676693e9ff396994f71f7dc214cc54))
+* more warnings ([f434fa5](https://github.com/markwoon/RefinedNations/commit/f434fa5aae396691c789b24bf3cf6882612b78e8))
+* tweak warning styling ([4a3add6](https://github.com/markwoon/RefinedNations/commit/4a3add6498e35282f5123097c9c1a4adba07f255))
+
 ### [3.6.3](https://github.com/markwoon/RefinedNations/compare/v3.6.2...v3.6.3) (2022-04-28)
 
 
