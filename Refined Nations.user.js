@@ -490,11 +490,16 @@ if (tracksTable) {
   extraActions.style.paddingRight = '2em';
   let gotExtraActions = false;
   let passTurn;
+  let buyChopin;
   if (tracksTable.children.length > 5) {
     for (let x = 5; x < tracksTable.children.length; x += 1) {
       const cellValue = tracksTable.children[x];
       if (cellValue.innerHTML.indexOf('Pass Turn') !== -1) {
         passTurn = cellValue;
+      } else if (cellValue.innerHTML.indexOf('Special-Action-Chopin') != -1) {
+        buyChopin = cellValue.children[0];
+        buyChopin.style.color = 'blue';
+        buyChopin.style.verticalAlign = 'inherit';
       } else if (cellValue.innerHTML.indexOf('buy') === 0) {
         if (x + 1 < tracksTable.children.length && tracksTable.children[x + 1].innerHTML.indexOf('Buy-Advisor') !== -1) {
           x += 1;
@@ -565,6 +570,12 @@ if (tracksTable) {
     const actionRow = actions.children[0].children[0].children[0];
     actionRow.removeChild(actionRow.children[2]);
     actionRow.children[1].style.border = 'none';
+    if (buyChopin) {
+      const li = document.createElement('li');
+      li.appendChild(buyChopin);
+      actionRow.children[0].children[1].prepend(li);
+      console.log(actionRow.children[0].children[1]);
+    }
     addTrackCell(actions);
     addTrackSpacer();
     addTrackCell(justice, military, science);
@@ -757,11 +768,11 @@ for (let x = 0; x < players.length; x++) {
   }
   const meepleIcon = `<img src="/modules/GM_Nations/images/Meeple_${userColor}.png" alt="${userColor} meeple" style="vertical-align: middle; height: 1.25em" />`;
 
-  warnIfInPlay(p, userIcon, 'Pocahontas', 'all: colonies require +4<img src="/modules/GM_Nations/images/Military.png" alt="Military" style="vertical-align: middle; height: 1.25em" />');
+  warnIfInPlay(p, userIcon, 'Pocahontas', 'all: colonies require +4<img src="/modules/GM_Nations/images/Military.png" alt="Military" style="vertical-align: top; height: 1.2em" />');
   if (players[x] !== username) {
     warnIfInPlay(p, userIcon,'Assassin');
-    warnIfInPlay(p, userIcon,'Cape_of_Good_Hope', 'colonies -4 <img src="/modules/GM_Nations/images/Military.png" alt="Military" style="vertical-align: middle; height: 1.25em" />', true);
-    warnIfInPlay(p, userIcon, 'Hannibal', 'battles cost +1<img src="/modules/GM_Nations/images/Token_Gold.png" alt="Gold" style="vertical-align: middle; height: 1.25em" />');
+    warnIfInPlay(p, userIcon,'Cape_of_Good_Hope', 'colonies -4<img src="/modules/GM_Nations/images/Military.png" alt="Military" style="vertical-align: top; height: 1.2em" />', true);
+    warnIfInPlay(p, userIcon, 'Hannibal', 'battles cost +1<img src="/modules/GM_Nations/images/Token_Gold.png" alt="Gold" style="vertical-align: top; height: 1.2em" />');
     warnIfInPlay(p, userIcon, 'Petra', 'can exchange resources', true, true);
     warnIfInPlay(p, userIcon, 'Piazza_San_Marco', 'can exchange resources', true, true);
     warnIfInPlay(p, userIcon, 'Sun_Tzu');
@@ -800,11 +811,22 @@ for (let x = 0; x < players.length; x++) {
       const umayyad = p.querySelector('img[src="modules/GM_Nations/images/Dynasties_Cards/Umayyad_Caliphate.jpg"]');
       const abbasid = p.querySelector('img[src="modules/GM_Nations/images/Dynasties_Cards/Abbasid_Caliphate.jpg"]');
       if (umayyad && umayyad.getAttribute('width') !== '30') {
-        addWarning(userIcon, 'Umayyad Caliphate', ': colonies -4<img src="/modules/GM_Nations/images/Military.png" alt="Military" style="vertical-align: middle; height: 1.25em" /></li>');
+        addWarning(userIcon, 'Umayyad Caliphate', ': colonies -4<img src="/modules/GM_Nations/images/Military.png" alt="Military" style="vertical-align: top; height: 1.2em" /></li>');
       } else if (abbasid && abbasid.getAttribute('width') !== '30') {
         addWarning(userIcon, 'Abbasid Caliphate', ': may buy <img src="/modules/GM_Nations/images/Token_VP.png" alt="VP" style="vertical-align: middle; height: 1.25em" /> when others buy golden age</li>');
       } else {
         addWarning(userIcon, 'Arabs', `: +${meepleIcon}/battle</li>`);
+      }
+    }
+
+    const ethiopia = p.querySelector('img[src="modules/GM_Nations/images/DPlayerBoard_Ethiopia.jpg"]');
+    if (ethiopia) {
+      const sheba = p.querySelector('img[src="modules/GM_Nations/images/Dynasties_Cards/Sheba.jpg"]');
+      const auxumite = p.querySelector('img[src="modules/GM_Nations/images/Dynasties_Cards/Axumite_Kingdom.jpg"]');
+      if (auxumite && auxumite.getAttribute('width') !== '30') {
+        addWarning(userIcon, 'Auxumite Kingdom', ': +3<img src="/modules/GM_Nations/images/Token_Gold.png" alt="Gold" style="vertical-align: top; height: 1.2em" /> token');
+      } else if (!sheba || sheba.getAttribute('width') === '30') {
+        addWarning(userIcon, 'Ethiopia', ': <img src="/modules/GM_Nations/images/Military.png" alt="Military" style="vertical-align: top; height: 1.2em" /> + <img src="/modules/GM_Nations/images/Stability.png" alt="Stability" style="vertical-align: top; height: 1.1em" /> for turn order');
       }
     }
 
