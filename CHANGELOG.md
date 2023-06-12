@@ -1,3 +1,11 @@
+## [3.6.5](https://github.com/markwoon/RefinedNations/compare/v3.6.4...v3.6.5) (2023-06-12)
+
+
+### Bug Fixes
+
+* fix GM_config problem ([c906712](https://github.com/markwoon/RefinedNations/commit/c906712c10e08432464ced5a8468e26facb82c3b))
+* support buying Chopin, warnings for Ethiopia ([33fda94](https://github.com/markwoon/RefinedNations/commit/33fda94069c90b198a406e742b245c4b6fe7eb99))
+
 ## [3.6.4](https://github.com/markwoon/RefinedNations/compare/v3.6.3...v3.6.4) (2022-10-24)
 
 
