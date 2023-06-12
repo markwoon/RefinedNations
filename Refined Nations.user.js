@@ -10,7 +10,7 @@
 // @namespace    https://github.com/markwoon/
 // @supportURL   https://github.com/markwoon/RefinedNations
 // @icon         https://raw.githubusercontent.com/markwoon/RefinedNations/b14a0e06e8f585a451d6d99e40a08a6f04b43398/images/marie_curie.png
-// @require      https://openuserjs.org/src/libs/sizzle/GM_config.js
+// @require      https://raw.githubusercontent.com/sizzlemctwizzle/GM_config/2207c5c1322ebb56e401f03c2e581719f909762a/gm_config.js
 // @grant        GM_addStyle
 // @grant        GM_info
 // @grant        GM_notification
